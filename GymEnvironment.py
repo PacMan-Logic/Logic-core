@@ -46,7 +46,6 @@ class PacmanEnv(gym.Env):
 
         # Note: use round instead of time to terminate the game
         self._round = 0
-        self._boardlist = []
         self._pacman = Pacman()
         self._ghosts = [Ghost(), Ghost(), Ghost()]
 
@@ -63,7 +62,7 @@ class PacmanEnv(gym.Env):
         self._pacman_score = 0
         self._ghosts_score = 0
 
-        self.observation_space = spaces.MultiDiscrete(
+        self._observation_space = spaces.MultiDiscrete(
             np.ones((size, size)) * SPACE_CATEGORY
         )  # 这段代码定义了环境的观察空间。在强化学习中，观察空间代表了智能体可以观察到的环境状态的所有可能值
 
@@ -125,16 +124,6 @@ class PacmanEnv(gym.Env):
             }
             return return_dict
 
-    # training utils
-    def observation_space(self):
-        return self.observation_space
-
-    def pacman_action_space(self):
-        return self._pacman_action_space
-
-    def ghost_action_space(self):
-        return self._ghost_action_space
-
     def reset(self):
         self._size -= 20  # 80 60 40 20
         self._level += 1  # 0 1 2 3
@@ -158,8 +147,6 @@ class PacmanEnv(gym.Env):
 
         self._board = final_boardgenerator(self._size)
 
-        self._boardlist.append(self._board)  # Note: store the board for rendering
-
         self._round = 0
 
         return_board = self._board.tolist()
@@ -177,13 +164,6 @@ class PacmanEnv(gym.Env):
             "status": 1,  # ???
         }
         return return_dict
-
-    def get_level(self):
-        return self._level
-
-    # step utils
-    def check_round_end(self):
-        return self._round >= MAX_ROUND[self._level]
 
     def update_all_score(self):
         self._pacman_score = self.get_pacman_score()
@@ -479,11 +459,27 @@ class PacmanEnv(gym.Env):
             raise ValueError("No empty space found")
         return coord
 
-    def next_level(self):
-        self._level += 1
-        if self._level > MAX_LEVEL:
-            return True
-        return False
+    # utils functions for user ai
+    def observation_space(self):
+        return self._observation_space
+
+    def pacman_action_space(self):
+        return self._pacman_action_space
+
+    def ghost_action_space(self):
+        return self._ghost_action_space
 
     def events(self):
         return self._event_list
+    
+    def game_state(self):
+        return GameState(
+            level=self._level,
+            round=self._round,
+            board_size=self._size,
+            pacman_skill_status=self._pacman.get_skills_status(),
+            pacman_pos=self._pacman.get_coord(),
+            ghosts_pos=[ghost.get_coord() for ghost in self._ghosts],
+            pacman_score=self._pacman_score,
+            ghosts_score=self._ghosts_score,
+        )        
