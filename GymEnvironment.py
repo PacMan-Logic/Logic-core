@@ -161,9 +161,27 @@ class PacmanEnv(gym.Env):
             "score": [self._pacman_score, self._ghosts_score],
             "level": self._level,
             "board": return_board,
-            "status": 1,  # ???
         }
         return return_dict
+    
+    def ai_reset(self, dict): # Note: this function is used for AI to reset the game
+        self._size -= 20
+        
+        self._level = dict["level"]
+        
+        self._ghosts[0].set_coord(dict["ghosts_coord"][0])
+        self._ghosts[1].set_coord(dict["ghosts_coord"][1])
+        self._ghosts[2].set_coord(dict["ghosts_coord"][2])
+        self._pacman.set_coord(dict["pacman_coord"])
+        
+        self._ghosts_score = dict["score"][1]
+        self._pacman_score = dict["score"][0]
+        
+        self._round = 0
+        
+        self._board = np.array(dict["board"])
+        
+        return
 
     def update_all_score(self):
         self._pacman_score = self.get_pacman_score()
