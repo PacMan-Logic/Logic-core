@@ -13,7 +13,6 @@ from .gamedata import *
 
 import os
 
-
 def opposite_direction(x, y):  # dont need this now
     if x == 0 or y == 0:
         return True
@@ -191,7 +190,8 @@ class PacmanEnv(gym.Env):
     def step(self, pacmanAction: int, ghostAction: List[int]):
 
         self._round += 1
-
+        print(self._round)
+        print()
         # 重置事件列表（本轮）
         self._event_list = []
 
