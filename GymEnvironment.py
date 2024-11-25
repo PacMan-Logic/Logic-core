@@ -460,6 +460,9 @@ class PacmanEnv(gym.Env):
         if coord == []:
             raise ValueError("No empty space found")
         return coord
+    
+    def get_level(self):
+        return self._level
 
     # utils functions for user ai
     def observation_space(self):
