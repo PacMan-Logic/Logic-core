@@ -58,7 +58,7 @@ def final_boardgenerator(actual_size):
         ]
         for coord in coordinates:
             final_board[coord] = 2
-            
+    
     return final_board
     
 
