@@ -59,13 +59,6 @@ def final_boardgenerator(actual_size):
         for coord in coordinates:
             final_board[coord] = 2
     
-    # 计算数组中大于 2 的元素个数
-    count = np.count_nonzero(final_board == 0)
-    count1 = np.count_nonzero(final_board >= 0)
-
-    print(count)
-    print(count1)
-    
     return final_board
     
 

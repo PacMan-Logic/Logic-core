@@ -13,23 +13,6 @@ from .gamedata import *
 
 import os
 
-def opposite_direction(x, y):  # dont need this now
-    if x == 0 or y == 0:
-        return True
-    if (x == 1 and y == 3) or (x == 3 and y == 1):
-        return True
-    if (x == 2 and y == 4) or (x == 4 and y == 2):
-        return True
-    return False
-
-
-def have_same_element(a, b):  # dont need this now
-    for i in a:
-        if i in b:
-            return True
-    else:
-        return False
-
 
 class PacmanEnv(gym.Env):
     metadata = {"render_modes": ["local", "logic", "ai"]}
@@ -105,19 +88,19 @@ class PacmanEnv(gym.Env):
 
         elif mode == "logic":  # 返回一个字典
             return_dict = {
+                "round": self._round,
+                "level": self._level,
+                "board": self._board.tolist(),
+                "pacman_step_block": self._pacman_step_block,
+                "pacman_coord": self._pacman.get_coord(),
+                "pacman_skills": self._last_skill_status,
                 "ghosts_step_block": self._ghosts_step_block,
                 "ghosts_coord": [
                     self._ghosts[0].get_coord(),
                     self._ghosts[1].get_coord(),
                     self._ghosts[2].get_coord(),
                 ],
-                "pacman_step_block": self._pacman_step_block,
-                "pacman_coord": self._pacman.get_coord(),
-                "pacman_skills": self._last_skill_status,
-                # Note: 播放器需要根据是否有magnet属性确定每次移动的时候需要如何吸取豆子
-                "round": self._round,
                 "score": [self._pacman_score, self._ghosts_score],
-                "level": self._level,
                 "events": [i.value for i in self._event_list],
                 "StopReason": None,
             }
@@ -160,6 +143,7 @@ class PacmanEnv(gym.Env):
             "score": [self._pacman_score, self._ghosts_score],
             "level": self._level,
             "board": return_board,
+            "events": [],
         }
         return return_dict
     
@@ -489,7 +473,7 @@ class PacmanEnv(gym.Env):
 
     def events(self):
         return self._event_list
-    
+
     def game_state(self):
         return GameState(
             level=self._level,
@@ -500,4 +484,4 @@ class PacmanEnv(gym.Env):
             ghosts_pos=[ghost.get_coord() for ghost in self._ghosts],
             pacman_score=self._pacman_score,
             ghosts_score=self._ghosts_score,
-        )        
+        )
