@@ -90,7 +90,7 @@ class PacmanEnv(gym.Env):
             return_dict = {
                 "round": self._round,
                 "level": self._level,
-                "board": self._board.tolist(),
+                # "board": self._board.tolist(),
                 "pacman_step_block": self._pacman_step_block,
                 "pacman_coord": self._pacman.get_coord(),
                 "pacman_skills": self._last_skill_status,
