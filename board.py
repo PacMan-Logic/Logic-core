@@ -4,7 +4,6 @@ import random
 # note: level1 38*38 level2 29*29 level3 20*20
 
 def final_boardgenerator(actual_size):
-    print(actual_size)
     size = 20
     if actual_size == 20:
         num_blocks = 1
