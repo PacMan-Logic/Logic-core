@@ -377,14 +377,7 @@ class PacmanEnv(gym.Env):
         flag = False
         parsed_pacman_step_block = []
         for i in range(len(self._pacman_step_block)):
-            if -200 <= self._pacman_step_block[i][0] < -100:
-                parsed_pacman_step_block.append(
-                    [
-                        self._pacman_step_block[i][0] + 200,
-                        self._pacman_step_block[i][1] + 200,
-                    ]
-                )
-            elif -100 <= self._pacman_step_block[i][0] < 0:
+            if self._pacman_step_block[i][0] < 0:
                 parsed_pacman_step_block.append(
                     [
                         self._pacman_step_block[i][0] + 100,
@@ -398,18 +391,11 @@ class PacmanEnv(gym.Env):
         for i in range(3):
             parsed_ghost_step_block = []
             for j in range(len(self._ghosts_step_block[i])):
-                if -200 <= self._ghosts_step_block[i][j][0] < -100:
+                if self._ghosts_step_block[i][j][0] < 0:
                     parsed_ghost_step_block.append(
                         [
                             self._ghosts_step_block[i][j][0] + 200,
                             self._ghosts_step_block[i][j][1] + 200,
-                        ]
-                    )
-                elif -100 <= self._ghosts_step_block[i][j][0] < 0:
-                    parsed_ghost_step_block.append(
-                        [
-                            self._ghosts_step_block[i][j][0] + 100,
-                            self._ghosts_step_block[i][j][1] + 100,
                         ]
                     )
                 else:
@@ -439,13 +425,18 @@ class PacmanEnv(gym.Env):
                     / 2,
                     parsed_ghosts_step_block[i][1],
                 ]
-                
+
         def distance(a, b):
             return abs(a[0] - b[0]) + abs(a[1] - b[1])
-        
+
         for i in range(len(parsed_pacman_step_block)):
             for j in range(3):
-                if distance(parsed_pacman_step_block[i], parsed_ghosts_step_block[j][i]) <= 0.5:
+                if (
+                    distance(
+                        parsed_pacman_step_block[i], parsed_ghosts_step_block[j][i]
+                    )
+                    <= 0.5
+                ):
                     flag = True
                     break
 
