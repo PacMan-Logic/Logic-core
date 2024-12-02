@@ -20,7 +20,7 @@ class PacmanEnv(gym.Env):
     def __init__(
         self,
         render_mode=None,
-        size=INITIAL_BOARD_SIZE,  # this will subtract 20 in the reset function every time
+        size=INITIAL_BOARD_SIZE[0],  # this will subtract 20 in the reset function every time
     ):
         assert size >= 3
         self._size = size
@@ -36,7 +36,8 @@ class PacmanEnv(gym.Env):
         self._last_skill_status = [0] * SKILL_NUM
 
         self._level = 0  # Note: this will plus 1 in the reset function every time
-
+        
+        self._beannumber = 0
         # store runtime details for rendering
         self._last_operation = []
         self._pacman_step_block = []
@@ -107,7 +108,7 @@ class PacmanEnv(gym.Env):
             return return_dict
 
     def reset(self):
-        self._size -= 20  # 80 60 40 20
+        self._size = INITIAL_BOARD_SIZE[self._level]
         self._level += 1  # 0 1 2 3
 
         # regenerate at the corner
@@ -127,11 +128,14 @@ class PacmanEnv(gym.Env):
         self._ghosts[1].set_coord(coords[2])
         self._ghosts[2].set_coord(coords[3])
 
-        self._board = final_boardgenerator(self._size)
+        self._board, self._beannumber = final_boardgenerator(self._size)
+        
 
         self._round = 0
 
         return_board = self._board.tolist()
+        
+        beannum = self._beannumber
 
         return_dict = {
             "ghosts_coord": [
@@ -144,6 +148,7 @@ class PacmanEnv(gym.Env):
             "level": self._level,
             "board": return_board,
             "events": [],
+            "beannumber": beannum
         }
         return return_dict
     
@@ -163,6 +168,8 @@ class PacmanEnv(gym.Env):
         self._round = 0
         
         self._board = np.array(dict["board"])
+        
+        self._beannumber = dict["beannumber"]
         
         return
 
