@@ -20,7 +20,9 @@ class PacmanEnv(gym.Env):
     def __init__(
         self,
         render_mode=None,
-        size=INITIAL_BOARD_SIZE[0],  # this will subtract 20 in the reset function every time
+        size=INITIAL_BOARD_SIZE[
+            0
+        ],  # this will subtract 20 in the reset function every time
     ):
         assert size >= 3
         self._size = size
@@ -36,7 +38,7 @@ class PacmanEnv(gym.Env):
         self._last_skill_status = [0] * SKILL_NUM
 
         self._level = 0  # Note: this will plus 1 in the reset function every time
-        
+
         self._beannumber = 0
         # store runtime details for rendering
         self._last_operation = []
@@ -129,12 +131,11 @@ class PacmanEnv(gym.Env):
         self._ghosts[2].set_coord(coords[3])
 
         self._board, self._beannumber = final_boardgenerator(self._size)
-        
 
         self._round = 0
 
         return_board = self._board.tolist()
-        
+
         beannum = self._beannumber
 
         return_dict = {
@@ -148,29 +149,29 @@ class PacmanEnv(gym.Env):
             "level": self._level,
             "board": return_board,
             "events": [],
-            "beannumber": beannum
+            "beannumber": beannum,
         }
         return return_dict
-    
-    def ai_reset(self, dict): # Note: this function is used for AI to reset the game
+
+    def ai_reset(self, dict):  # Note: this function is used for AI to reset the game
         self._level = dict["level"]
-        
+
         self._size = INITIAL_BOARD_SIZE[self._level]
-        
+
         self._ghosts[0].set_coord(dict["ghosts_coord"][0])
         self._ghosts[1].set_coord(dict["ghosts_coord"][1])
         self._ghosts[2].set_coord(dict["ghosts_coord"][2])
         self._pacman.set_coord(dict["pacman_coord"])
-        
+
         self._ghosts_score = dict["score"][1]
         self._pacman_score = dict["score"][0]
-        
+
         self._round = 0
-        
+
         self._board = np.array(dict["board"])
-        
+
         self._beannumber = dict["beannumber"]
-        
+
         return
 
     def update_all_score(self):
@@ -374,19 +375,75 @@ class PacmanEnv(gym.Env):
 
         # check if ghosts caught pacman
         flag = False
+        parsed_pacman_step_block = []
+        for i in range(len(self._pacman_step_block)):
+            if -200 <= self._pacman_step_block[i][0] < -100:
+                parsed_pacman_step_block.append(
+                    [
+                        self._pacman_step_block[i][0] + 200,
+                        self._pacman_step_block[i][1] + 200,
+                    ]
+                )
+            elif -100 <= self._pacman_step_block[i][0] < 0:
+                parsed_pacman_step_block.append(
+                    [
+                        self._pacman_step_block[i][0] + 100,
+                        self._pacman_step_block[i][1] + 100,
+                    ]
+                )
+
+        parsed_ghosts_step_block = []
         for i in range(3):
-            if pacman_skills[Skill.SPEED_UP.value] > 0:
+            parsed_ghost_step_block = []
+            for j in range(len(self._ghosts_step_block[i])):
+                if -200 <= self._ghosts_step_block[i][j][0] < -100:
+                    parsed_ghost_step_block.append(
+                        [
+                            self._ghosts_step_block[i][j][0] + 200,
+                            self._ghosts_step_block[i][j][1] + 200,
+                        ]
+                    )
+                elif -100 <= self._ghosts_step_block[i][j][0] < 0:
+                    parsed_ghost_step_block.append(
+                        [
+                            self._ghosts_step_block[i][j][0] + 100,
+                            self._ghosts_step_block[i][j][1] + 100,
+                        ]
+                    )
+            parsed_ghosts_step_block.append(parsed_ghost_step_block)
 
-                # NOTE: debugging start
-                assert len(self._pacman_step_block) > 2
-                for g in self._ghosts_step_block:
-                    assert len(g) > 1
-                # NOTE: debugging end
+        # debug start
+        assert len(parsed_pacman_step_block) == len(self._pacman_step_block)
+        for i in parsed_pacman_step_block:
+            assert 0 <= i[0] < self._size
+            assert 0 <= i[1] < self._size
 
-                if self._pacman_step_block[-2] == self._ghosts_step_block[i][-1]:
+        for i in range(3):
+            assert len(parsed_ghosts_step_block[i]) == len(self._ghosts_step_block[i])
+            for j in parsed_ghosts_step_block[i]:
+                assert 0 <= j[0] < self._size
+                assert 0 <= j[1] < self._size
+
+        # debug end
+
+        # parse into same stamps
+        if len(parsed_pacman_step_block) == 3:
+            for i in range(3):
+                parsed_ghosts_step_block[i] = [
+                    parsed_ghosts_step_block[i][0],
+                    (parsed_ghosts_step_block[i][1] + parsed_ghosts_step_block[i][1])
+                    / 2,
+                    parsed_ghosts_step_block[i][1],
+                ]
+                
+        def distance(a, b):
+            return abs(a[0] - b[0]) + abs(a[1] - b[1])
+        
+        for i in range(len(parsed_pacman_step_block)):
+            for j in range(3):
+                if distance(parsed_pacman_step_block[i], parsed_ghosts_step_block[j][i]) <= 0.5:
                     flag = True
-            if self._pacman_step_block[-1] == self._ghosts_step_block[i][-1]:
-                flag = True
+                    break
 
         if flag:
             if not self._pacman.encounter_ghost():
@@ -467,7 +524,7 @@ class PacmanEnv(gym.Env):
         if coord == []:
             raise ValueError("No empty space found")
         return coord
-    
+
     def get_level(self):
         return self._level
 
