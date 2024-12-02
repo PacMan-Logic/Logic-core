@@ -153,9 +153,9 @@ class PacmanEnv(gym.Env):
         return return_dict
     
     def ai_reset(self, dict): # Note: this function is used for AI to reset the game
-        self._size -= 20
-        
         self._level = dict["level"]
+        
+        self._size = INITIAL_BOARD_SIZE[self._level]
         
         self._ghosts[0].set_coord(dict["ghosts_coord"][0])
         self._ghosts[1].set_coord(dict["ghosts_coord"][1])
