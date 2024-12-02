@@ -130,3 +130,6 @@ class Pacman:
 
     def reset(self):
         self._skill_status = [0, 0, 0, 0]
+
+    def clear_skills(self):
+        self._skill_status = [0, 0, 0, 0]
