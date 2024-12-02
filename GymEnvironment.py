@@ -20,7 +20,7 @@ class PacmanEnv(gym.Env):
     def __init__(
         self,
         render_mode=None,
-        size=INITIAL_BOARD_SIZE,  # this will subtract 20 in the reset function every time
+        size=INITIAL_BOARD_SIZE[0],  # this will subtract 20 in the reset function every time
     ):
         assert size >= 3
         self._size = size
@@ -36,7 +36,8 @@ class PacmanEnv(gym.Env):
         self._last_skill_status = [0] * SKILL_NUM
 
         self._level = 0  # Note: this will plus 1 in the reset function every time
-
+        
+        self._beannumber = 0
         # store runtime details for rendering
         self._last_operation = []
         self._pacman_step_block = []
@@ -90,7 +91,7 @@ class PacmanEnv(gym.Env):
             return_dict = {
                 "round": self._round,
                 "level": self._level,
-                "board": self._board.tolist(),
+                # "board": self._board.tolist(),
                 "pacman_step_block": self._pacman_step_block,
                 "pacman_coord": self._pacman.get_coord(),
                 "pacman_skills": self._last_skill_status,
@@ -107,7 +108,7 @@ class PacmanEnv(gym.Env):
             return return_dict
 
     def reset(self):
-        self._size -= 20  # 80 60 40 20
+        self._size = INITIAL_BOARD_SIZE[self._level]
         self._level += 1  # 0 1 2 3
 
         # regenerate at the corner
@@ -127,11 +128,14 @@ class PacmanEnv(gym.Env):
         self._ghosts[1].set_coord(coords[2])
         self._ghosts[2].set_coord(coords[3])
 
-        self._board = final_boardgenerator(self._size)
+        self._board, self._beannumber = final_boardgenerator(self._size)
+        
 
         self._round = 0
 
         return_board = self._board.tolist()
+        
+        beannum = self._beannumber
 
         return_dict = {
             "ghosts_coord": [
@@ -144,8 +148,30 @@ class PacmanEnv(gym.Env):
             "level": self._level,
             "board": return_board,
             "events": [],
+            "beannumber": beannum
         }
         return return_dict
+    
+    def ai_reset(self, dict): # Note: this function is used for AI to reset the game
+        self._size -= 20
+        
+        self._level = dict["level"]
+        
+        self._ghosts[0].set_coord(dict["ghosts_coord"][0])
+        self._ghosts[1].set_coord(dict["ghosts_coord"][1])
+        self._ghosts[2].set_coord(dict["ghosts_coord"][2])
+        self._pacman.set_coord(dict["pacman_coord"])
+        
+        self._ghosts_score = dict["score"][1]
+        self._pacman_score = dict["score"][0]
+        
+        self._round = 0
+        
+        self._board = np.array(dict["board"])
+        
+        self._beannumber = dict["beannumber"]
+        
+        return
 
     def update_all_score(self):
         self._pacman_score = self.get_pacman_score()
@@ -155,7 +181,6 @@ class PacmanEnv(gym.Env):
     def step(self, pacmanAction: int, ghostAction: List[int]):
 
         self._round += 1
-
         # 重置事件列表（本轮）
         self._event_list = []
 
@@ -442,6 +467,9 @@ class PacmanEnv(gym.Env):
         if coord == []:
             raise ValueError("No empty space found")
         return coord
+    
+    def get_level(self):
+        return self._level
 
     # utils functions for user ai
     def observation_space(self):
