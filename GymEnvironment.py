@@ -417,14 +417,19 @@ class PacmanEnv(gym.Env):
         # debug end
 
         # parse into same stamps
-        if len(parsed_pacman_step_block) == 3:
-            for i in range(3):
-                parsed_ghosts_step_block[i] = [
-                    parsed_ghosts_step_block[i][0],
-                    (parsed_ghosts_step_block[i][1] + parsed_ghosts_step_block[i][1])
-                    / 2,
-                    parsed_ghosts_step_block[i][1],
-                ]
+        if len(parsed_pacman_step_block) == 2:
+            parsed_pacman_step_block = [
+                parsed_pacman_step_block[0],
+                (parsed_pacman_step_block[0] + parsed_pacman_step_block[1]) / 2,
+                parsed_pacman_step_block[1],
+            ]
+
+        for i in range(3):
+            parsed_ghosts_step_block[i] = [
+                parsed_ghosts_step_block[i][0],
+                (parsed_ghosts_step_block[i][1] + parsed_ghosts_step_block[i][1]) / 2,
+                parsed_ghosts_step_block[i][1],
+            ]
 
         def distance(a, b):
             return abs(a[0] - b[0]) + abs(a[1] - b[1])
