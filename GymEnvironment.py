@@ -402,20 +402,6 @@ class PacmanEnv(gym.Env):
                     parsed_ghost_step_block.append(self._ghosts_step_block[i][j])
             parsed_ghosts_step_block.append(parsed_ghost_step_block)
 
-        # debug start
-        assert len(parsed_pacman_step_block) == len(self._pacman_step_block)
-        for i in parsed_pacman_step_block:
-            assert 0 <= i[0] < self._size
-            assert 0 <= i[1] < self._size
-
-        for i in range(3):
-            assert len(parsed_ghosts_step_block[i]) == len(self._ghosts_step_block[i])
-            for j in parsed_ghosts_step_block[i]:
-                assert 0 <= j[0] < self._size
-                assert 0 <= j[1] < self._size
-
-        # debug end
-
         # parse into same stamps
         if len(parsed_pacman_step_block) == 2:
             parsed_pacman_step_block = [
