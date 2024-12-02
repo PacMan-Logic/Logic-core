@@ -156,7 +156,7 @@ class PacmanEnv(gym.Env):
     def ai_reset(self, dict):  # Note: this function is used for AI to reset the game
         self._level = dict["level"]
 
-        self._size = INITIAL_BOARD_SIZE[self._level - 1]
+        self._size = INITIAL_BOARD_SIZE[self._level]
 
         self._ghosts[0].set_coord(dict["ghosts_coord"][0])
         self._ghosts[1].set_coord(dict["ghosts_coord"][1])
@@ -391,6 +391,8 @@ class PacmanEnv(gym.Env):
                         self._pacman_step_block[i][1] + 100,
                     ]
                 )
+            else:
+                parsed_pacman_step_block.append(self._pacman_step_block[i])
 
         parsed_ghosts_step_block = []
         for i in range(3):
@@ -410,6 +412,8 @@ class PacmanEnv(gym.Env):
                             self._ghosts_step_block[i][j][1] + 100,
                         ]
                     )
+                else:
+                    parsed_ghost_step_block.append(self._ghosts_step_block[i][j])
             parsed_ghosts_step_block.append(parsed_ghost_step_block)
 
         # debug start
