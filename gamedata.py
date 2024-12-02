@@ -1,5 +1,6 @@
 import enum
 from dataclasses import dataclass
+from numpy import ndarray
 
 # define constants
 ROUND_BONUS_GAMMA = 1
@@ -57,14 +58,24 @@ class Event(enum.Enum):
     FINISH_LEVEL = 2
     TIMEOUT = 3
 
+class Move(enum.Enum):
+    STAY = 0
+    UP = 1
+    LEFT = 2
+    DOWN = 3
+    RIGHT = 4
+
 
 @dataclass
 class GameState:
     level: int
     round: int
     board_size: int
+    board: ndarray
     pacman_skill_status: list[int]
     pacman_pos: list[int]
     ghosts_pos: list[list[int]]
     pacman_score: int
     ghosts_score: int
+
+

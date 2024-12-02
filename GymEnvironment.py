@@ -489,6 +489,7 @@ class PacmanEnv(gym.Env):
             level=self._level,
             round=self._round,
             board_size=self._size,
+            board=self._board,
             pacman_skill_status=self._pacman.get_skills_status(),
             pacman_pos=self._pacman.get_coord(),
             ghosts_pos=[ghost.get_coord() for ghost in self._ghosts],
