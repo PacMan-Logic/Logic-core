@@ -187,8 +187,8 @@ class PacmanEnv(gym.Env):
                     self._pacman.get_coord()
                     if self._pacman.up(self._board)
                     else [
-                        self._pacman.get_coord()[0] - 100 - 1,
-                        self._pacman.get_coord()[1] - 100,
+                        self._pacman.get_coord()[0] + PACMAN_HIT_OFFSET - 1,
+                        self._pacman.get_coord()[1] + PACMAN_HIT_OFFSET,
                     ]
                 )
                 self._pacman.eat_bean(self._board)
@@ -197,8 +197,8 @@ class PacmanEnv(gym.Env):
                     self._pacman.get_coord()
                     if self._pacman.up(self._board)
                     else [
-                        self._pacman.get_coord()[0] - 100 - 1,
-                        self._pacman.get_coord()[1] - 100,
+                        self._pacman.get_coord()[0] + PACMAN_HIT_OFFSET - 1,
+                        self._pacman.get_coord()[1] + PACMAN_HIT_OFFSET,
                     ]
                 )
             elif pacmanAction == 2:  # 向左移动
@@ -206,8 +206,8 @@ class PacmanEnv(gym.Env):
                     self._pacman.get_coord()
                     if self._pacman.left(self._board)
                     else [
-                        self._pacman.get_coord()[0] - 100,
-                        self._pacman.get_coord()[1] - 100 - 1,
+                        self._pacman.get_coord()[0] + PACMAN_HIT_OFFSET,
+                        self._pacman.get_coord()[1] + PACMAN_HIT_OFFSET - 1,
                     ]
                 )
                 self._pacman.eat_bean(self._board)
@@ -216,8 +216,8 @@ class PacmanEnv(gym.Env):
                     self._pacman.get_coord()
                     if self._pacman.left(self._board)
                     else [
-                        self._pacman.get_coord()[0] - 100,
-                        self._pacman.get_coord()[1] - 100 - 1,
+                        self._pacman.get_coord()[0] + PACMAN_HIT_OFFSET,
+                        self._pacman.get_coord()[1] + PACMAN_HIT_OFFSET - 1,
                     ]
                 )
             elif pacmanAction == 1:  # 向上移动
@@ -225,8 +225,8 @@ class PacmanEnv(gym.Env):
                     self._pacman.get_coord()
                     if self._pacman.down(self._board)
                     else [
-                        self._pacman.get_coord()[0] - 100 + 1,
-                        self._pacman.get_coord()[1] - 100,
+                        self._pacman.get_coord()[0] + PACMAN_HIT_OFFSET + 1,
+                        self._pacman.get_coord()[1] + PACMAN_HIT_OFFSET,
                     ]
                 )
                 self._pacman.eat_bean(self._board)
@@ -235,8 +235,8 @@ class PacmanEnv(gym.Env):
                     self._pacman.get_coord()
                     if self._pacman.down(self._board)
                     else [
-                        self._pacman.get_coord()[0] - 100 + 1,
-                        self._pacman.get_coord()[1] - 100,
+                        self._pacman.get_coord()[0] + PACMAN_HIT_OFFSET + 1,
+                        self._pacman.get_coord()[1] + PACMAN_HIT_OFFSET,
                     ]
                 )
             elif pacmanAction == 4:  # 向右移动
@@ -244,8 +244,8 @@ class PacmanEnv(gym.Env):
                     self._pacman.get_coord()
                     if self._pacman.right(self._board)
                     else [
-                        self._pacman.get_coord()[0] - 100,
-                        self._pacman.get_coord()[1] - 100 + 1,
+                        self._pacman.get_coord()[0] + PACMAN_HIT_OFFSET,
+                        self._pacman.get_coord()[1] + PACMAN_HIT_OFFSET + 1,
                     ]
                 )
                 self._pacman.eat_bean(self._board)
@@ -254,8 +254,8 @@ class PacmanEnv(gym.Env):
                     self._pacman.get_coord()
                     if self._pacman.right(self._board)
                     else [
-                        self._pacman.get_coord()[0] - 100,
-                        self._pacman.get_coord()[1] - 100 + 1,
+                        self._pacman.get_coord()[0] + PACMAN_HIT_OFFSET,
+                        self._pacman.get_coord()[1] + PACMAN_HIT_OFFSET + 1,
                     ]
                 )
             else:  # 退出程序
@@ -268,8 +268,8 @@ class PacmanEnv(gym.Env):
                     self._pacman.get_coord()
                     if self._pacman.up(self._board)
                     else [
-                        self._pacman.get_coord()[0] - 100 - 1,
-                        self._pacman.get_coord()[1] - 100,
+                        self._pacman.get_coord()[0] + PACMAN_HIT_OFFSET - 1,
+                        self._pacman.get_coord()[1] + PACMAN_HIT_OFFSET,
                     ]
                 )
             elif pacmanAction == 2:
@@ -277,8 +277,8 @@ class PacmanEnv(gym.Env):
                     self._pacman.get_coord()
                     if self._pacman.left(self._board)
                     else [
-                        self._pacman.get_coord()[0] - 100,
-                        self._pacman.get_coord()[1] - 100 - 1,
+                        self._pacman.get_coord()[0] + PACMAN_HIT_OFFSET,
+                        self._pacman.get_coord()[1] + PACMAN_HIT_OFFSET - 1,
                     ]
                 )
             elif pacmanAction == 1:
@@ -286,8 +286,8 @@ class PacmanEnv(gym.Env):
                     self._pacman.get_coord()
                     if self._pacman.down(self._board)
                     else [
-                        self._pacman.get_coord()[0] - 100 + 1,
-                        self._pacman.get_coord()[1] - 100,
+                        self._pacman.get_coord()[0] + PACMAN_HIT_OFFSET + 1,
+                        self._pacman.get_coord()[1] + PACMAN_HIT_OFFSET,
                     ]
                 )
             elif pacmanAction == 4:
@@ -295,8 +295,8 @@ class PacmanEnv(gym.Env):
                     self._pacman.get_coord()
                     if self._pacman.right(self._board)
                     else [
-                        self._pacman.get_coord()[0] - 100,
-                        self._pacman.get_coord()[1] - 100 + 1,
+                        self._pacman.get_coord()[0] + PACMAN_HIT_OFFSET,
+                        self._pacman.get_coord()[1] + PACMAN_HIT_OFFSET + 1,
                     ]
                 )
             else:
@@ -312,8 +312,8 @@ class PacmanEnv(gym.Env):
                     self._ghosts[i].get_coord()
                     if self._ghosts[i].up(self._board)
                     else [
-                        self._ghosts[i].get_coord()[0] - 200 - 1,
-                        self._ghosts[i].get_coord()[1] - 200,
+                        self._ghosts[i].get_coord()[0] + GHOST_HIT_OFFSET - 1,
+                        self._ghosts[i].get_coord()[1] + GHOST_HIT_OFFSET,
                     ]
                 )
             elif ghostAction[i] == 2:
@@ -321,8 +321,8 @@ class PacmanEnv(gym.Env):
                     self._ghosts[i].get_coord()
                     if self._ghosts[i].left(self._board)
                     else [
-                        self._ghosts[i].get_coord()[0] - 200,
-                        self._ghosts[i].get_coord()[1] - 200 - 1,
+                        self._ghosts[i].get_coord()[0] + GHOST_HIT_OFFSET,
+                        self._ghosts[i].get_coord()[1] + GHOST_HIT_OFFSET - 1,
                     ]
                 )
             elif ghostAction[i] == 1:
@@ -330,8 +330,8 @@ class PacmanEnv(gym.Env):
                     self._ghosts[i].get_coord()
                     if self._ghosts[i].down(self._board)
                     else [
-                        self._ghosts[i].get_coord()[0] - 200 + 1,
-                        self._ghosts[i].get_coord()[1] - 200,
+                        self._ghosts[i].get_coord()[0] + GHOST_HIT_OFFSET + 1,
+                        self._ghosts[i].get_coord()[1] + GHOST_HIT_OFFSET,
                     ]
                 )
             elif ghostAction[i] == 4:
@@ -339,8 +339,8 @@ class PacmanEnv(gym.Env):
                     self._ghosts[i].get_coord()
                     if self._ghosts[i].right(self._board)
                     else [
-                        self._ghosts[i].get_coord()[0] - 200,
-                        self._ghosts[i].get_coord()[1] - 200 + 1,
+                        self._ghosts[i].get_coord()[0] + GHOST_HIT_OFFSET,
+                        self._ghosts[i].get_coord()[1] + GHOST_HIT_OFFSET + 1,
                     ]
                 )
             else:
@@ -372,6 +372,8 @@ class PacmanEnv(gym.Env):
                 self._pacman.update_score(EATEN_BY_GHOST)
                 self._ghosts[i].update_score(EAT_PACMAN)
                 self.update_all_score()
+                self._pacman.clear_skills()
+                self._last_skill_status = self._pacman.get_skills_status()
                 self._pacman.set_coord(self.find_distant_emptyspace())
                 # Note: if caught, the respawning coord will be stored at the last position of the list"pacman_step_block"
                 self._pacman_step_block.append(self._pacman.get_coord())
