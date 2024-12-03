@@ -378,12 +378,10 @@ class PacmanEnv(gym.Env):
         parsed_pacman_step_block = []
         for i in range(len(self._pacman_step_block)):
             if self._pacman_step_block[i][0] < 0:
-                parsed_pacman_step_block.append(
-                    [
-                        self._pacman_step_block[i][0] + 100,
-                        self._pacman_step_block[i][1] + 100,
-                    ]
-                )
+                if self._pacman_step_block[i - 1][0] < 0:
+                    parsed_pacman_step_block.append(self._pacman_step_block[i - 2])
+                else:
+                    parsed_pacman_step_block.append(self._pacman_step_block[i - 1])
             else:
                 parsed_pacman_step_block.append(self._pacman_step_block[i])
 
@@ -392,12 +390,14 @@ class PacmanEnv(gym.Env):
             parsed_ghost_step_block = []
             for j in range(len(self._ghosts_step_block[i])):
                 if self._ghosts_step_block[i][j][0] < 0:
-                    parsed_ghost_step_block.append(
-                        [
-                            self._ghosts_step_block[i][j][0] + 200,
-                            self._ghosts_step_block[i][j][1] + 200,
-                        ]
-                    )
+                    if self._ghosts_step_block[i][j - 1][0] < 0:
+                        parsed_ghost_step_block.append(
+                            self._ghosts_step_block[i][j - 2]
+                        )
+                    else:
+                        parsed_ghost_step_block.append(
+                            self._ghosts_step_block[i][j - 1]
+                        )
                 else:
                     parsed_ghost_step_block.append(self._ghosts_step_block[i][j])
             parsed_ghosts_step_block.append(parsed_ghost_step_block)
@@ -406,14 +406,30 @@ class PacmanEnv(gym.Env):
         if len(parsed_pacman_step_block) == 2:
             parsed_pacman_step_block = [
                 parsed_pacman_step_block[0],
-                (parsed_pacman_step_block[0] + parsed_pacman_step_block[1]) / 2,
+                [
+                    (parsed_pacman_step_block[0][0] + parsed_pacman_step_block[1][0])
+                    / 2,
+                    (parsed_pacman_step_block[0][1] + parsed_pacman_step_block[1][1])
+                    / 2,
+                ],
                 parsed_pacman_step_block[1],
             ]
 
         for i in range(3):
             parsed_ghosts_step_block[i] = [
                 parsed_ghosts_step_block[i][0],
-                (parsed_ghosts_step_block[i][1] + parsed_ghosts_step_block[i][1]) / 2,
+                [
+                    (
+                        parsed_ghosts_step_block[i][0][0]
+                        + parsed_ghosts_step_block[i][1][0]
+                    )
+                    / 2,
+                    (
+                        parsed_ghosts_step_block[i][0][1]
+                        + parsed_ghosts_step_block[i][1][1]
+                    )
+                    / 2,
+                ],
                 parsed_ghosts_step_block[i][1],
             ]
 
