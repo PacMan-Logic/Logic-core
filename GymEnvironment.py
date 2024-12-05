@@ -59,11 +59,11 @@ class PacmanEnv(gym.Env):
         self.render_mode = render_mode
 
     # return the current state of the game
-    # FIXME: 有测试更改
+    # FIXME: 有测试更改(done)
     def render(self, mode="logic"):
         if mode == "local":
             # os.system("clear")
-            for i in range(self._size):
+            for i in range(self._size - 1, -1, -1): # 翻转y轴
                 for j in range(self._size):
                     if self._pacman.get_coord() == [i, j]:
                         print("\033[1;40m  \033[0m", end="")
