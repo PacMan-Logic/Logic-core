@@ -20,9 +20,7 @@ class PacmanEnv(gym.Env):
     def __init__(
         self,
         render_mode=None,
-        size=INITIAL_BOARD_SIZE[
-            0
-        ],  # this will subtract 20 in the reset function every time
+        size=INITIAL_BOARD_SIZE[1],
     ):
         assert size >= 3
         self._size = size
@@ -59,7 +57,7 @@ class PacmanEnv(gym.Env):
         self.render_mode = render_mode
 
     # return the current state of the game
-    # FIXME: 有测试更改(done)
+    # FIXME: 有测试更改
     def render(self, mode="logic"):
         if mode == "local":
             # os.system("clear")
@@ -110,8 +108,8 @@ class PacmanEnv(gym.Env):
             return return_dict
 
     def reset(self):
-        self._size = INITIAL_BOARD_SIZE[self._level]
         self._level += 1  # 0 1 2 3
+        self._size = INITIAL_BOARD_SIZE[self._level]
 
         # regenerate at the corner
         coords = [
@@ -156,7 +154,7 @@ class PacmanEnv(gym.Env):
     def ai_reset(self, dict):  # Note: this function is used for AI to reset the game
         self._level = dict["level"]
 
-        self._size = INITIAL_BOARD_SIZE[self._level - 1]
+        self._size = INITIAL_BOARD_SIZE[self._level]
 
         self._ghosts[0].set_coord(dict["ghosts_coord"][0])
         self._ghosts[1].set_coord(dict["ghosts_coord"][1])
