@@ -57,11 +57,10 @@ class PacmanEnv(gym.Env):
         self.render_mode = render_mode
 
     # return the current state of the game
-    # FIXME: 有测试更改
     def render(self, mode="logic"):
         if mode == "local":
             # os.system("clear")
-            for i in range(self._size - 1, -1, -1): # 翻转y轴
+            for i in range(self._size - 1, -1, -1):  # 翻转y轴
                 for j in range(self._size):
                     if self._pacman.get_coord() == [i, j]:
                         print("\033[1;40m  \033[0m", end="")
@@ -163,13 +162,11 @@ class PacmanEnv(gym.Env):
 
         self._ghosts_score = dict["score"][1]
         self._pacman_score = dict["score"][0]
-
+        
         self._round = 0
-
         self._board = np.array(dict["board"])
-
         self._beannumber = dict["beannumber"]
-
+        
         return
 
     def update_all_score(self):
@@ -434,7 +431,8 @@ class PacmanEnv(gym.Env):
         def distance(a, b):
             return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
-        for i in range(len(parsed_pacman_step_block)):
+        # FIXED issue 2: not counting the first step
+        for i in range(1, len(parsed_pacman_step_block)):
             for j in range(3):
                 if (
                     distance(
@@ -457,8 +455,7 @@ class PacmanEnv(gym.Env):
                 self._pacman.clear_skills()
                 self._last_skill_status = self._pacman.get_skills_status()
                 self._pacman.set_coord(self.find_distant_emptyspace())
-                # Note: if caught, the respawning coord will be stored at the last position of the list"pacman_step_block"
-                self._pacman_step_block.append(self._pacman.get_coord())
+                # FIXED issue 3: respawn coord can be fetched in pacman_coord, and len(pacman_step_block) == speed + 1
                 self._event_list.append(Event.EATEN_BY_GHOST)
 
         # diminish the skill time
