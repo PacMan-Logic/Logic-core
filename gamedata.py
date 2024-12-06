@@ -2,13 +2,24 @@ import enum
 from dataclasses import dataclass
 from numpy import ndarray
 
-# define constants
-ROUND_BONUS_GAMMA = 1
+# Pacman bonus
+PACMAN_HUGE_BONUS_THRESHOLD = 100
+PACMAN_HUGE_BONUS = 100
 EATEN_BY_GHOST = -20
+EAT_ALL_BEANS = 30
+
+# Ghost bonus
+# NOTE: GHOST_HUGE_BONUS and PREVENT_PACMAN_EAT_ALL_BEANS will be added for all three ghosts!
+GHOST_HUGE_BONUS_THRESHOLD = 3
+GHOST_HUGE_BONUS = 20
+PREVENT_PACMAN_EAT_ALL_BEANS = 20
 EAT_PACMAN = 30
 DESTORY_PACMAN_SHIELD = 5
-EAT_ALL_BEANS = 30
-PREVENT_PACMAN_EAT_ALL_BEANS = 20
+
+
+
+ROUND_BONUS_GAMMA = 1
+
 
 MAX_ROUND = [0, 500, 400, 300]  # 每个棋盘最多轮数38*38 29*29 20*20
 HUGE_BONUS_GAMMA = [0, 0.5, 0.7, 0.9]

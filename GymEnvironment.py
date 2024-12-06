@@ -30,12 +30,11 @@ class PacmanEnv(gym.Env):
         self._round = 0
         self._pacman = Pacman()
         self._ghosts = [Ghost(), Ghost(), Ghost()]
-
         self._event_list = []
-
         self._last_skill_status = [0] * SKILL_NUM
-
         self._level = 0  # Note: this will plus 1 in the reset function every time
+        self._pacman_continuous_alive = 0
+        self._eaten_time = 0
 
         self._beannumber = 0
         # store runtime details for rendering
@@ -162,11 +161,11 @@ class PacmanEnv(gym.Env):
 
         self._ghosts_score = dict["score"][1]
         self._pacman_score = dict["score"][0]
-        
+
         self._round = 0
         self._board = np.array(dict["board"])
         self._beannumber = dict["beannumber"]
-        
+
         return
 
     def update_all_score(self):
@@ -447,11 +446,14 @@ class PacmanEnv(gym.Env):
             if not self._pacman.encounter_ghost():
                 self._ghosts[i].update_score(DESTORY_PACMAN_SHIELD)
                 self.update_all_score()
+                self._pacman_continuous_alive = 0
                 self._event_list.append(Event.SHEILD_DESTROYED)
             else:
                 self._pacman.update_score(EATEN_BY_GHOST)
                 self._ghosts[i].update_score(EAT_PACMAN)
                 self.update_all_score()
+                self._eaten_time += 1
+                self._pacman_continuous_alive = 0
                 self._pacman.clear_skills()
                 self._last_skill_status = self._pacman.get_skills_status()
                 self._pacman.set_coord(self.find_distant_emptyspace())
@@ -467,14 +469,27 @@ class PacmanEnv(gym.Env):
             print("Pacman eat bean error")
             exit(1)
 
-        # check if the game is over
+        # FIXED issue 1: HUGE BONUS
+        if not flag:
+            self._pacman_continuous_alive += 1
+            if self._pacman_continuous_alive >= PACMAN_HUGE_BONUS_THRESHOLD:
+                self._pacman.update_score(PACMAN_HUGE_BONUS)
+                self.update_all_score()
+                self._pacman_continuous_alive = 0
+
+        if flag and self._eaten_time >= GHOST_HUGE_BONUS_THRESHOLD:
+            for ghost in self._ghosts:
+                ghost.update_score(GHOST_HUGE_BONUS)
+            self.update_all_score()
+            self._eaten_time = 0
+
+        # 通关
         count_remain_beans = 0
         for i in range(self._size):
             for j in range(self._size):
                 if self._board[i][j] == 2 | 3:
                     count_remain_beans += 1
 
-        # 通关
         if count_remain_beans == 0:
             self._pacman.update_score(
                 EAT_ALL_BEANS
@@ -483,6 +498,8 @@ class PacmanEnv(gym.Env):
             self.update_all_score()
             self._pacman.reset()
             self._event_list.append(Event.FINISH_LEVEL)
+            self._pacman_continuous_alive = 0
+            self._eaten_time = 0
             # return true means game over
             return (self._board, [self._pacman_score, self._ghosts_score], True)
 
@@ -493,6 +510,8 @@ class PacmanEnv(gym.Env):
             self.update_all_score()
             self._pacman.reset()
             self._event_list.append(Event.TIMEOUT)
+            self._pacman_continuous_alive = 0
+            self._eaten_time = 0
             return (self._board, [self._pacman_score, self._ghosts_score], True)
 
         # 正常
