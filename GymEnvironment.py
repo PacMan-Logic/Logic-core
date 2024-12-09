@@ -487,7 +487,7 @@ class PacmanEnv(gym.Env):
         count_remain_beans = 0
         for i in range(self._size):
             for j in range(self._size):
-                if self._board[i][j] == 2 | 3:
+                if (self._board[i][j] == Space.REGULAR_BEAN.value) or (self._board[i][j] == Space.BONUS_BEAN.value):
                     count_remain_beans += 1
 
         if count_remain_beans == 0:
