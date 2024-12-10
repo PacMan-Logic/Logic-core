@@ -3,7 +3,7 @@ import random
 
 # note: level1 38*38 level2 29*29 level3 20*20
 
-def final_boardgenerator(actual_size):
+def final_boardgenerator(actual_size, level):
     size = 20
     if actual_size == 20:
         num_blocks = 1
@@ -26,6 +26,9 @@ def final_boardgenerator(actual_size):
     # fix：在最中间的3*3的可走区域，加一个传送门
     flag = False
     middle = actual_size / 2
+    if level == 3:
+        flag = True # fix:level3 不设置传送门
+    
     while not flag:
         i = random.randint(middle - 1, middle + 1)
         j = random.randint(middle - 1, middle + 1)

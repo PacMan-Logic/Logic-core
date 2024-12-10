@@ -130,7 +130,7 @@ class PacmanEnv(gym.Env):
         self._ghosts[1].set_coord(coords[2])
         self._ghosts[2].set_coord(coords[3])
 
-        self._board, self._beannumber = final_boardgenerator(self._size)
+        self._board, self._beannumber = final_boardgenerator(self._size, self._level)
 
         self._round = 0
 
