@@ -11,10 +11,14 @@ class Pacman:
         shield=0,  # Note: the number of shield
         x=-1,
         y=-1,
+        level = 1, # feat: magnet 5*5 in level1
+        board_size = 20
     ):
         self._score = score
         self._skill_status = [double_score, speed_up, magnet, shield]
         self._coord = [x, y]
+        self._level = level
+        self._board_size = board_size
 
     def update_score(self, points):
         if self._skill_status[Skill.DOUBLE_SCORE.value] == 0:
@@ -23,6 +27,12 @@ class Pacman:
             self._score += points * 2
 
     def just_eat(self, board, x, y):
+        if x < 0 or y < 0:# 可能越界的特判
+            return
+        
+        if x > self._board_size or y > self._board_size:
+            return
+        
         if board[x][y] == Space.REGULAR_BEAN.value:
             board[x][y] = Space.EMPTY.value
             self.update_score(1)
@@ -52,7 +62,7 @@ class Pacman:
         if self._skill_status[Skill.MAGNET.value] == 0:
             self.just_eat(board, x, y)
 
-        else:
+        elif self._level > 1:
             self.just_eat(board, x, y)
             self.just_eat(board, x - 1, y - 1)
             self.just_eat(board, x - 1, y)
@@ -62,6 +72,12 @@ class Pacman:
             self.just_eat(board, x + 1, y - 1)
             self.just_eat(board, x + 1, y)
             self.just_eat(board, x + 1, y + 1)
+        
+        else: # 在level1的时候磁铁是5*5
+            for i in range(-2, 3):
+                for j in range(-2, 3):
+                    self.just_eat(board, x + i, y + j)
+            
 
     # 判断pacman是否撞墙，是否与ghost相遇的部分应该放在main函数中实现
 
@@ -81,6 +97,12 @@ class Pacman:
             self._skill_status[skill_index.value] = DEFAULT_SKILL_TIME[
                 skill_index.value
             ]
+    
+    def set_level(self, level):
+        self._level = level
+        
+    def set_size(self, size):
+        self._board_size = size
 
     def new_round(self):  # Note: reset the skill status when a new round starts
         if self._skill_status[Skill.DOUBLE_SCORE.value] > 0:

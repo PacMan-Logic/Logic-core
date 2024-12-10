@@ -23,6 +23,25 @@ def final_boardgenerator(actual_size):
     
     final_board = original_board[0:actual_size, 0:actual_size]
     
+    # fix：在最中间的3*3的可走区域，加一个传送门
+    flag = False
+    middle = actual_size / 2
+    while not flag:
+        i = random.randint(middle - 1, middle + 1)
+        j = random.randint(middle - 1, middle + 1)
+        if final_board[i][j] != 0:
+            final_board[i][j] = 8 # 传送门
+            flag = True
+        
+    # 护盾每关3个
+    iter = 0
+    while iter < 3:
+        i = random.randint(1, size - 2)
+        j = random.randint(1, size - 2)
+        if final_board[i][j] == 1 or final_board[i][j] == 2:
+            final_board[i][j] = 6
+            iter += 1
+    
     # 在地图的边缘添加墙壁
     final_board[0, :] = final_board[-1, :] = final_board[:, 0] = final_board[:, -1] = 0
     
@@ -31,6 +50,7 @@ def final_boardgenerator(actual_size):
         for j in range(actual_size):
             if final_board[i][j] == 2 or final_board[i][j] == 3 or final_board[i][j] == 4 or final_board[i][j] == 5 or final_board[i][j] == 6 or final_board[i][j] == 7:
                 t += 1
+                
 
     return final_board, t
     
@@ -56,7 +76,7 @@ def boardgenerator(actual_size):
                 board = opposite_c_wall_generator(board, (size - 4) // 2, i + ((size - 4) // 4) - 1, j + ((size - 4) // 4) - 1)
 	
             
-	# 生成不同种类的豆子
+	# 生成不同种类的豆子fix:降低护盾数，每一关3个
     for i in range(1, size - 2):
         for j in range(1, size - 2):
             if board[i][j] == 2:
@@ -65,14 +85,13 @@ def boardgenerator(actual_size):
                     board[i][j] = 3
                 elif number < 10:
                     board[i][j] = 4
-                elif number < 15:
+                elif number < 20:#加速豆比例加到1/10
                     board[i][j] = 5
-                elif number < 20:
-                    board[i][j] = 6
                 elif number < 25:
                     board[i][j] = 7
-                elif (actual_size != 20) and number > 75: # 空间太大，豆子太多，需要减少豆子数量
+                elif number > 75: # fix：不能豆子全铺满
                     board[i][j] = 1
+        
     
     return board
 

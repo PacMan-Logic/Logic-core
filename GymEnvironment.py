@@ -83,6 +83,8 @@ class PacmanEnv(gym.Env):
                         print("\033[1;46m  \033[0m", end="")  # 护盾豆子：青
                     elif self._board[i][j] == 7:
                         print("\033[1;48;5;208m  \033[0m", end="")  # *2豆子：橘
+                    elif self._board[i][j] == 8:
+                        print("\033[1;48;5;0m  \033[0m", end="") # 传送门：黑
                 print()
 
         elif mode == "logic":  # 返回一个字典
@@ -122,6 +124,8 @@ class PacmanEnv(gym.Env):
 
         # distribute the coords
         self._pacman.set_coord(coords[0])
+        self._pacman.set_level(self._level)
+        self._pacman.set_size(self._size)
         self._ghosts[0].set_coord(coords[1])
         self._ghosts[1].set_coord(coords[2])
         self._ghosts[2].set_coord(coords[3])
