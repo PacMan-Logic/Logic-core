@@ -30,7 +30,7 @@ class Pacman:
         if x < 0 or y < 0:# 可能越界的特判
             return
         
-        if x > self._board_size or y > self._board_size:
+        if x >= self._board_size or y >= self._board_size:
             return
         
         if board[x][y] == Space.REGULAR_BEAN.value:
