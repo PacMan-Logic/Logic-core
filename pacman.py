@@ -108,6 +108,9 @@ class Pacman:
     
     def set_portal_coord(self, portal_coord):
         self._portal_coord = portal_coord
+    
+    def get_portal_coord(self):
+        return self._portal_coord
 
     def new_round(self):  # Note: reset the skill status when a new round starts
         if self._skill_status[Skill.DOUBLE_SCORE.value] > 0:
