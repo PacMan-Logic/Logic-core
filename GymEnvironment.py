@@ -43,6 +43,7 @@ class PacmanEnv(gym.Env):
         self._ghosts_step_block = [[], [], []]
         self._pacman_score = 0
         self._ghosts_score = 0
+        self._portal_coord = [-1, -1]
 
         self._observation_space = spaces.MultiDiscrete(
             np.ones((size, size)) * SPACE_CATEGORY
@@ -130,7 +131,9 @@ class PacmanEnv(gym.Env):
         self._ghosts[1].set_coord(coords[2])
         self._ghosts[2].set_coord(coords[3])
 
-        self._board, self._beannumber = final_boardgenerator(self._size, self._level)
+        self._board, self._beannumber, self._portal_coord = final_boardgenerator(self._size, self._level)
+        
+        self._pacman.set_portal_coord(self._portal_coord)
 
         self._round = 0
 
@@ -150,6 +153,7 @@ class PacmanEnv(gym.Env):
             "board": return_board,
             "events": [],
             "beannumber": beannum,
+            "portal_coord": self._portal_coord
         }
         return return_dict
 
@@ -169,6 +173,7 @@ class PacmanEnv(gym.Env):
         self._round = 0
         self._board = np.array(dict["board"])
         self._beannumber = dict["beannumber"]
+        self._portal_coord = dict["portal_coord"]
 
         return
 

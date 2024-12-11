@@ -38,11 +38,13 @@ def final_boardgenerator(actual_size, level):
         
     # 护盾每关3个
     iter = 0
+    x = -1
+    y = -1
     while iter < 3:
-        i = random.randint(1, size - 2)
-        j = random.randint(1, size - 2)
-        if final_board[i][j] == 1 or final_board[i][j] == 2:
-            final_board[i][j] = 6
+        x = random.randint(1, size - 2)
+        y = random.randint(1, size - 2)
+        if final_board[x][y] == 1 or final_board[x][y] == 2:
+            final_board[x][y] = 6
             iter += 1
     
     # 在地图的边缘添加墙壁
@@ -55,7 +57,7 @@ def final_boardgenerator(actual_size, level):
                 t += 1
                 
 
-    return final_board, t
+    return final_board, t, [x, y]
     
 
 def boardgenerator(actual_size):

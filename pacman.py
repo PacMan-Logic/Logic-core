@@ -12,13 +12,15 @@ class Pacman:
         x=-1,
         y=-1,
         level = 1, # feat: magnet 5*5 in level1
-        board_size = 20
+        board_size = 20,
+        portal_coord = [-1, -1]
     ):
         self._score = score
         self._skill_status = [double_score, speed_up, magnet, shield]
         self._coord = [x, y]
         self._level = level
         self._board_size = board_size
+        self._portal_coord = portal_coord
 
     def update_score(self, points):
         if self._skill_status[Skill.DOUBLE_SCORE.value] == 0:
@@ -103,6 +105,9 @@ class Pacman:
         
     def set_size(self, size):
         self._board_size = size
+    
+    def set_portal_coord(self, portal_coord):
+        self._portal_coord = portal_coord
 
     def new_round(self):  # Note: reset the skill status when a new round starts
         if self._skill_status[Skill.DOUBLE_SCORE.value] > 0:
