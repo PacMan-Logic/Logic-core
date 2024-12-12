@@ -90,3 +90,4 @@ class GameState:
     ghosts_pos: list[list[int]]
     pacman_score: int
     ghosts_score: int
+    portal_coord: list[int]

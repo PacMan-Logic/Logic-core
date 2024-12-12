@@ -532,9 +532,6 @@ class PacmanEnv(gym.Env):
     def get_ghosts_score(self):
         ghost_scores = [ghost.get_score() for ghost in self._ghosts]
         return sum(ghost_scores)
-    
-    def get_portal_coord(self):
-        return self._pacman.get_portal_coord()
 
     # in case of respawn just beside the ghosts, find a distant empty space
     def find_distant_emptyspace(self):
@@ -580,4 +577,5 @@ class PacmanEnv(gym.Env):
             ghosts_pos=[ghost.get_coord() for ghost in self._ghosts],
             pacman_score=self._pacman_score,
             ghosts_score=self._ghosts_score,
+            portal_coord=self._portal_coord
         )
