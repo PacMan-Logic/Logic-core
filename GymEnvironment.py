@@ -53,7 +53,6 @@ class PacmanEnv(gym.Env):
     # return the current state of the game
     def render(self, mode="logic"):
         if mode == "local":
-            # os.system("clear")
             for i in range(self._size - 1, -1, -1):  # 翻转y轴
                 for j in range(self._size):
                     if self._pacman.get_coord() == [i, j]:
@@ -93,7 +92,7 @@ class PacmanEnv(gym.Env):
                 "ghosts_coord": [ghost.get_coord() for ghost in self._ghosts],
                 "score": [self._pacman_score, self._ghosts_score],
                 "events": [i.value for i in self._event_list],
-                "portal": self._portal_coord if self._portal_available else None,
+                "portal_available": self._portal_available,
                 "StopReason": None,
             }
             return return_dict
@@ -429,7 +428,7 @@ class PacmanEnv(gym.Env):
                     self.update_all_score()
                 return self.finish_level_in_advance()
 
-        if count_remain_beans <= self._beannumber * PORTAL_THRESHOLD:
+        if self._level != 3 and self._round >= PORTAL_AVAILABLE[self._level]:
             self._portal_available = True
 
         def distance(a, b):
