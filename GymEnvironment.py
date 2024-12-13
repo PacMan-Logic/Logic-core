@@ -420,9 +420,6 @@ class PacmanEnv(gym.Env):
                 ):
                     count_remain_beans += 1
 
-        if count_remain_beans <= self._beannumber * PORTAL_THRESHOLD:
-            self._portal_available = True
-
         if self._portal_available:
             if list(map(float, self._portal_coord)) in [
                 list(map(float, coord)) for coord in parsed_pacman_step_block
@@ -431,6 +428,9 @@ class PacmanEnv(gym.Env):
                     self._pacman.update_score(EAT_ALL_BEANS)
                     self.update_all_score()
                 return self.finish_level_in_advance()
+
+        if count_remain_beans <= self._beannumber * PORTAL_THRESHOLD:
+            self._portal_available = True
 
         def distance(a, b):
             return abs(a[0] - b[0]) + abs(a[1] - b[1])
