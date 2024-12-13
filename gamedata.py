@@ -16,6 +16,7 @@ PREVENT_PACMAN_EAT_ALL_BEANS = 20
 EAT_PACMAN = 30
 DESTORY_PACMAN_SHIELD = 5
 
+PORTAL_THRESHOLD = 0.5
 
 
 ROUND_BONUS_GAMMA = 1
@@ -90,4 +91,5 @@ class GameState:
     ghosts_pos: list[list[int]]
     pacman_score: int
     ghosts_score: int
+    portal_available: bool
     portal_coord: list[int]

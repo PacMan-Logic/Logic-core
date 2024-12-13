@@ -22,22 +22,20 @@ class PacmanEnv(gym.Env):
         render_mode=None,
         size=INITIAL_BOARD_SIZE[1],
     ):
-        assert size >= 3
         self._size = size
         self._player = 0
 
         # Note: use round instead of time to terminate the game
         self._round = 0
         self._pacman = Pacman()
-        self._ghosts = [Ghost(), Ghost(), Ghost()]
+        self._ghosts = [Ghost() for _ in range(3)]
         self._event_list = []
         self._last_skill_status = [0] * SKILL_NUM
         self._level = 0  # Note: this will plus 1 in the reset function every time
         self._pacman_continuous_alive = 0
         self._eaten_time = 0
-
+        self._portal_available = False
         self._beannumber = 0
-        # store runtime details for rendering
         self._last_operation = []
         self._pacman_step_block = []
         self._ghosts_step_block = [[], [], []]
@@ -47,13 +45,9 @@ class PacmanEnv(gym.Env):
 
         self._observation_space = spaces.MultiDiscrete(
             np.ones((size, size)) * SPACE_CATEGORY
-        )  # 这段代码定义了环境的观察空间。在强化学习中，观察空间代表了智能体可以观察到的环境状态的所有可能值
-
+        )
         self._pacman_action_space = spaces.Discrete(OPERATION_NUM)
         self._ghost_action_space = spaces.MultiDiscrete(np.ones(3) * OPERATION_NUM)
-        # 这段代码定义了环境的动作空间。在训练过程中，吃豆人和幽灵应该索取不同的动作空间
-
-        assert render_mode is None or render_mode in self.metadata["render_modes"]
         self.render_mode = render_mode
 
     # return the current state of the game
@@ -85,25 +79,21 @@ class PacmanEnv(gym.Env):
                     elif self._board[i][j] == 7:
                         print("\033[1;48;5;208m  \033[0m", end="")  # *2豆子：橘
                     elif self._board[i][j] == 8:
-                        print("\033[1;48;5;0m  \033[0m", end="") # 传送门：黑
+                        print("\033[1;48;5;0m  \033[0m", end="")  # 传送门：黑
                 print()
 
         elif mode == "logic":  # 返回一个字典
             return_dict = {
                 "round": self._round,
                 "level": self._level,
-                # "board": self._board.tolist(),
                 "pacman_step_block": self._pacman_step_block,
                 "pacman_coord": self._pacman.get_coord(),
                 "pacman_skills": self._last_skill_status,
                 "ghosts_step_block": self._ghosts_step_block,
-                "ghosts_coord": [
-                    self._ghosts[0].get_coord(),
-                    self._ghosts[1].get_coord(),
-                    self._ghosts[2].get_coord(),
-                ],
+                "ghosts_coord": [ghost.get_coord() for ghost in self._ghosts],
                 "score": [self._pacman_score, self._ghosts_score],
                 "events": [i.value for i in self._event_list],
+                "portal": self._portal_coord if self._portal_available else None,
                 "StopReason": None,
             }
             return return_dict
@@ -127,54 +117,40 @@ class PacmanEnv(gym.Env):
         self._pacman.set_coord(coords[0])
         self._pacman.set_level(self._level)
         self._pacman.set_size(self._size)
-        self._ghosts[0].set_coord(coords[1])
-        self._ghosts[1].set_coord(coords[2])
-        self._ghosts[2].set_coord(coords[3])
+        for i in range(3):
+            self._ghosts[i].set_coord(coords[i + 1])
 
-        self._board, self._beannumber, self._portal_coord = final_boardgenerator(self._size, self._level)
-        
+        self._board, self._beannumber, self._portal_coord = final_boardgenerator(
+            self._size, self._level
+        )
         self._pacman.set_portal_coord(self._portal_coord)
-
+        self._portal_available = False
         self._round = 0
-
-        return_board = self._board.tolist()
-
         beannum = self._beannumber
-
         return_dict = {
-            "ghosts_coord": [
-                self._ghosts[0].get_coord(),
-                self._ghosts[1].get_coord(),
-                self._ghosts[2].get_coord(),
-            ],
+            "ghosts_coord": [ghost.get_coord() for ghost in self._ghosts],
             "pacman_coord": self._pacman.get_coord(),
             "score": [self._pacman_score, self._ghosts_score],
             "level": self._level,
-            "board": return_board,
+            "board": self._board.tolist(),
             "events": [],
             "beannumber": beannum,
-            "portal_coord": self._portal_coord
+            "portal_coord": self._portal_coord,
         }
         return return_dict
 
     def ai_reset(self, dict):  # Note: this function is used for AI to reset the game
         self._level = dict["level"]
-
         self._size = INITIAL_BOARD_SIZE[self._level]
-
-        self._ghosts[0].set_coord(dict["ghosts_coord"][0])
-        self._ghosts[1].set_coord(dict["ghosts_coord"][1])
-        self._ghosts[2].set_coord(dict["ghosts_coord"][2])
+        for i in range(3):
+            self._ghosts[i].set_coord(dict["ghosts_coord"][i])
         self._pacman.set_coord(dict["pacman_coord"])
-
         self._ghosts_score = dict["score"][1]
         self._pacman_score = dict["score"][0]
-
         self._round = 0
         self._board = np.array(dict["board"])
         self._beannumber = dict["beannumber"]
         self._portal_coord = dict["portal_coord"]
-
         return
 
     def update_all_score(self):
@@ -436,6 +412,26 @@ class PacmanEnv(gym.Env):
                 parsed_ghosts_step_block[i][1],
             ]
 
+        count_remain_beans = 0
+        for i in range(self._size):
+            for j in range(self._size):
+                if (self._board[i][j] == Space.REGULAR_BEAN.value) or (
+                    self._board[i][j] == Space.BONUS_BEAN.value
+                ):
+                    count_remain_beans += 1
+
+        if count_remain_beans <= self._beannumber * PORTAL_THRESHOLD:
+            self._portal_available = True
+
+        if self._portal_available:
+            if list(map(float, self._portal_coord)) in [
+                list(map(float, coord)) for coord in parsed_pacman_step_block
+            ]:
+                if count_remain_beans == 0:
+                    self._pacman.update_score(EAT_ALL_BEANS)
+                    self.update_all_score()
+                return self.finish_level_in_advance()
+
         def distance(a, b):
             return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
@@ -472,11 +468,7 @@ class PacmanEnv(gym.Env):
         # diminish the skill time
         self._pacman.new_round()
         # 避免出现最后一轮明明达到了最后一个豆子，但是还是会被判定为超时的问题
-        try:
-            self._pacman.eat_bean(self._board)
-        except:
-            print("Pacman eat bean error")
-            exit(1)
+        self._pacman.eat_bean(self._board)
 
         # FIXED issue 1: HUGE BONUS
         if not flag:
@@ -492,25 +484,10 @@ class PacmanEnv(gym.Env):
             self.update_all_score()
             self._eaten_time = 0
 
-        # 通关
-        count_remain_beans = 0
-        for i in range(self._size):
-            for j in range(self._size):
-                if (self._board[i][j] == Space.REGULAR_BEAN.value) or (self._board[i][j] == Space.BONUS_BEAN.value):
-                    count_remain_beans += 1
-
         if count_remain_beans == 0:
-            self._pacman.update_score(
-                EAT_ALL_BEANS
-                + (MAX_ROUND[self._level] - self._round) * ROUND_BONUS_GAMMA
-            )
+            self._pacman.update_score(EAT_ALL_BEANS)
             self.update_all_score()
-            self._pacman.reset()
-            self._event_list.append(Event.FINISH_LEVEL)
-            self._pacman_continuous_alive = 0
-            self._eaten_time = 0
-            # return true means game over
-            return (self._board, [self._pacman_score, self._ghosts_score], True)
+            return self.finish_level_in_advance()
 
         # 超时
         if self._round >= MAX_ROUND[self._level]:
@@ -525,6 +502,17 @@ class PacmanEnv(gym.Env):
 
         # 正常
         return self._board, [self._pacman_score, self._ghosts_score], False
+
+    def finish_level_in_advance(self):
+        self._pacman.update_score(
+            (MAX_ROUND[self._level] - self._round) * ROUND_BONUS_GAMMA
+        )
+        self.update_all_score()
+        self._pacman.reset()
+        self._event_list.append(Event.FINISH_LEVEL)
+        self._pacman_continuous_alive = 0
+        self._eaten_time = 0
+        return (self._board, [self._pacman_score, self._ghosts_score], True)
 
     def get_pacman_score(self):
         return self._pacman.get_score()
@@ -577,5 +565,6 @@ class PacmanEnv(gym.Env):
             ghosts_pos=[ghost.get_coord() for ghost in self._ghosts],
             pacman_score=self._pacman_score,
             ghosts_score=self._ghosts_score,
-            portal_coord=self._portal_coord
+            portal_available=self._portal_available,
+            portal_coord=self._portal_coord,
         )
