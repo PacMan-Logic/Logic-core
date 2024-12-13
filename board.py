@@ -29,17 +29,17 @@ def final_boardgenerator(actual_size, level):
     if level == 3:
         flag = True # fix:level3 不设置传送门
     
+    a = -1
+    b = -1
     while not flag:
-        i = random.randint(middle - 1, middle + 1)
-        j = random.randint(middle - 1, middle + 1)
-        if final_board[i][j] != 0:
-            final_board[i][j] = 8 # 传送门
+        a = random.randint(middle - 1, middle + 1)
+        b = random.randint(middle - 1, middle + 1)
+        if final_board[a][b] != 0:
+            final_board[a][b] = 8 # 传送门
             flag = True
         
     # 护盾每关3个
     iter = 0
-    x = -1
-    y = -1
     while iter < 3:
         x = random.randint(1, size - 2)
         y = random.randint(1, size - 2)
@@ -57,7 +57,7 @@ def final_boardgenerator(actual_size, level):
                 t += 1
                 
 
-    return final_board, t, [x, y]
+    return final_board, t, [a, b]
     
 
 def boardgenerator(actual_size):
