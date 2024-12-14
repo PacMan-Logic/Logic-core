@@ -54,6 +54,7 @@ class Space(enum.Enum):
     MAGNET_BEAN = 5
     SHIELD_BEAN = 6
     DOUBLE_BEAN = 7
+    PORTAL = 8
 
 
 class Skill(enum.Enum):
