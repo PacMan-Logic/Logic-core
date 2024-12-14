@@ -1,6 +1,6 @@
 import enum
 from dataclasses import dataclass
-from numpy import ndarray
+import numpy as np
 
 # Pacman bonus
 PACMAN_HUGE_BONUS_THRESHOLD = 100
@@ -72,12 +72,19 @@ class Event(enum.Enum):
     FINISH_LEVEL = 2
     TIMEOUT = 3 
 
-class Move(enum.Enum):
+class Direction(enum.Enum):
     STAY = 0
     UP = 1
     LEFT = 2
     DOWN = 3
     RIGHT = 4
+    
+class Update(enum.Enum):
+    STAY = (0, 0)
+    UP = (1, 0)
+    LEFT = (0, -1)
+    DOWN = (-1, 0)
+    RIGHT = (0, 1)
 
 
 @dataclass
@@ -85,11 +92,13 @@ class GameState:
     level: int
     round: int
     board_size: int
-    board: ndarray
+    board: np.ndarray
     pacman_skill_status: list[int]
-    pacman_pos: list[int]
-    ghosts_pos: list[list[int]]
+    pacman_pos: np.ndarray[int]
+    ghosts_pos: np.ndarray[np.ndarray[int]]
     pacman_score: int
     ghosts_score: int
     portal_available: bool
-    portal_coord: list[int]
+    portal_coord: np.ndarray[int]
+    
+    

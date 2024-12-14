@@ -1,10 +1,11 @@
 from .gamedata import *
+from .utils import *
 
 
 class Ghost:
     def __init__(self):
-        self._coord = [-1, -1]
         self._score = 0
+        self._coord = np.array([-1, -1])
 
     def get_coord(self):
         return self._coord.copy()
@@ -18,30 +19,13 @@ class Ghost:
     def get_score(self):
         return self._score
 
-    def up(self, board):
-        if board[self._coord[0] - 1][self._coord[1]] == Space.WALL.value:
+    def try_move(self, board, direction):
+        offset = direction_to_offset(direction)
+        new_coord = self._coord + offset
+        if board[new_coord[0], new_coord[1]] == Space.WALL.value:
             return False
-        self._coord[0] -= 1
-        return True
-
-    def down(self, board):
-        if board[self._coord[0] + 1][self._coord[1]] == Space.WALL.value:
-            return False
-        self._coord[0] += 1
-        return True
-
-    def left(self, board):
-        if board[self._coord[0]][self._coord[1] - 1] == Space.WALL.value:
-            return False
-        self._coord[1] -= 1
-        return True
-
-    def right(self, board):
-        if board[self._coord[0]][self._coord[1] + 1] == Space.WALL.value:
-            return False
-        self._coord[1] += 1
+        self._coord = new_coord
         return True
 
     def update_score(self, points):
         self._score += points
-

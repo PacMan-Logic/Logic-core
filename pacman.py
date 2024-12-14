@@ -1,40 +1,25 @@
 from .gamedata import *
+from .utils import *
 
 
 class Pacman:
-    def __init__(
-        self,
-        score=0,
-        double_score=0,
-        speed_up=0,
-        magnet=0,  # Note: the remaining rounds of magnet
-        shield=0,  # Note: the number of shield
-        x=-1,
-        y=-1,
-        level = 1, # feat: magnet 5*5 in level1
-        board_size = 20,
-        portal_coord = [-1, -1]
-    ):
-        self._score = score
-        self._skill_status = [double_score, speed_up, magnet, shield]
-        self._coord = [x, y]
-        self._level = level
-        self._board_size = board_size
-        self._portal_coord = portal_coord
+    def __init__(self):
+        self._score = 0
+        self._skill_status = [0, 0, 0, 0]
+        self._coord = np.array([-1, -1])
+        self._level = 1
+        self._board_size = 20
+        self._portal_coord = np.array([-1, -1])
 
     def update_score(self, points):
-        if self._skill_status[Skill.DOUBLE_SCORE.value] == 0:
-            self._score += points
-        else:
-            self._score += points * 2
+        self._score += (
+            2 * points if self._skill_status[Skill.DOUBLE_SCORE.value] > 0 else points
+        )
 
     def just_eat(self, board, x, y):
-        if x < 0 or y < 0:# 可能越界的特判
+        if not in_movable_board([x, y], self._level):
             return
-        
-        if x >= self._board_size or y >= self._board_size:
-            return
-        
+
         if board[x][y] == Space.REGULAR_BEAN.value:
             board[x][y] = Space.EMPTY.value
             self.update_score(1)
@@ -64,30 +49,10 @@ class Pacman:
         if self._skill_status[Skill.MAGNET.value] == 0:
             self.just_eat(board, x, y)
 
-        elif self._level > 1:
-            self.just_eat(board, x, y)
-            self.just_eat(board, x - 1, y - 1)
-            self.just_eat(board, x - 1, y)
-            self.just_eat(board, x - 1, y + 1)
-            self.just_eat(board, x, y - 1)
-            self.just_eat(board, x, y + 1)
-            self.just_eat(board, x + 1, y - 1)
-            self.just_eat(board, x + 1, y)
-            self.just_eat(board, x + 1, y + 1)
-        
-        else: # 在level1的时候磁铁是5*5
-            for i in range(-2, 3):
-                for j in range(-2, 3):
+        else:
+            for i in range(-1, 2):
+                for j in range(-1, 2):
                     self.just_eat(board, x + i, y + j)
-            
-
-    # 判断pacman是否撞墙，是否与ghost相遇的部分应该放在main函数中实现
-
-    def get_coord(self):
-        return self._coord.copy()
-
-    def set_coord(self, coord):
-        self._coord = coord
 
     def get_skills_status(self):
         return self._skill_status.copy()
@@ -99,20 +64,28 @@ class Pacman:
             self._skill_status[skill_index.value] = DEFAULT_SKILL_TIME[
                 skill_index.value
             ]
-    
+
     def set_level(self, level):
         self._level = level
-        
+
     def set_size(self, size):
         self._board_size = size
-    
+
+    def get_coord(self):
+        return self._coord.copy()
+
+    def set_coord(self, coord):
+        self._coord = coord
+
     def set_portal_coord(self, portal_coord):
         self._portal_coord = portal_coord
-    
+
     def get_portal_coord(self):
         return self._portal_coord
 
-    def new_round(self):  # Note: reset the skill status when a new round starts
+    def diminish_skill_time(
+        self,
+    ):  # Note: reset the skill status when a new round starts
         if self._skill_status[Skill.DOUBLE_SCORE.value] > 0:
             self._skill_status[Skill.DOUBLE_SCORE.value] -= 1
         if self._skill_status[Skill.MAGNET.value] > 0:
@@ -123,43 +96,20 @@ class Pacman:
     def get_score(self):
         return self._score
 
-    def encounter_ghost(self):
+    def break_sheild(self):
         if self._skill_status[Skill.SHIELD.value] > 0:
             self._skill_status[Skill.SHIELD.value] -= 1
             return False
         else:
             return True
 
-    def up(self, board):
-        if board[self._coord[0] - 1][self._coord[1]] != Space.WALL.value:
-            self._coord[0] -= 1
-            return True
-        else:
+    def try_move(self, board, direction: Direction):
+        offset = direction_to_offset(direction)
+        new_coord = self._coord + offset
+        if board[new_coord[0], new_coord[1]] == Space.WALL.value:
             return False
-
-    def down(self, board):
-        if board[self._coord[0] + 1][self._coord[1]] != Space.WALL.value:
-            self._coord[0] += 1
-            return True
-        else:
-            return False
-
-    def left(self, board):
-        if board[self._coord[0]][self._coord[1] - 1] != Space.WALL.value:
-            self._coord[1] -= 1
-            return True
-        else:
-            return False
-
-    def right(self, board):
-        if board[self._coord[0]][self._coord[1] + 1] != Space.WALL.value:
-            self._coord[1] += 1
-            return True
-        else:
-            return False
-
-    def reset(self):
-        self._skill_status = [0, 0, 0, 0]
+        self._coord = new_coord
+        return True
 
     def clear_skills(self):
         self._skill_status = [0, 0, 0, 0]
