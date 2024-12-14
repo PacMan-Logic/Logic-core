@@ -411,6 +411,11 @@ class PacmanEnv(gym.Env):
                 parsed_ghosts_step_block[i][1],
             ]
 
+        # diminish the skill time
+        self._pacman.new_round()
+        # 避免出现最后一轮明明达到了最后一个豆子，但是还是会被判定为超时的问题
+        self._pacman.eat_bean(self._board)
+
         count_remain_beans = 0
         for i in range(self._size):
             for j in range(self._size):
@@ -463,11 +468,6 @@ class PacmanEnv(gym.Env):
                 self._pacman.set_coord(self.find_distant_emptyspace())
                 # FIXED issue 3: respawn coord can be fetched in pacman_coord, and len(pacman_step_block) == speed + 1
                 self._event_list.append(Event.EATEN_BY_GHOST)
-
-        # diminish the skill time
-        self._pacman.new_round()
-        # 避免出现最后一轮明明达到了最后一个豆子，但是还是会被判定为超时的问题
-        self._pacman.eat_bean(self._board)
 
         # FIXED issue 1: HUGE BONUS
         if not flag:
