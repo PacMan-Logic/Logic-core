@@ -90,9 +90,9 @@ def boardgenerator(actual_size):
                     board[i][j] = 3
                 elif number < 15:# fix: 加速豆比例上升
                     board[i][j] = 4
-                elif number < 20:# fix：磁铁比例降低
+                elif number < 18:# fix：磁铁比例降低
                     board[i][j] = 5
-                elif number < 25:
+                elif number < 23:
                     board[i][j] = 7
                 elif number > 75: # fix：不能豆子全铺满
                     board[i][j] = 1
