@@ -88,9 +88,9 @@ def boardgenerator(actual_size):
                 number = random.randint(0, 100)
                 if number < 5:
                     board[i][j] = 3
-                elif number < 10:
+                elif number < 15:# fix: 加速豆比例上升
                     board[i][j] = 4
-                elif number < 20:#加速豆比例加到1/10
+                elif number < 20:# fix：磁铁比例降低
                     board[i][j] = 5
                 elif number < 25:
                     board[i][j] = 7
