@@ -2,6 +2,15 @@ import enum
 from dataclasses import dataclass
 import numpy as np
 
+class Type(enum.Enum):
+    ABNORMAL = 0 # 未正常启动
+    AI = 1 # ai
+    PLAYER = 2 # 播放器
+
+class Role(enum.Enum):
+    PACMAN = 0
+    GHOSTS = 1
+
 # 与judger交互相关数据
 FIRST_MAX_AI_TIME = 10
 MAX_AI_TIME = 2
