@@ -21,7 +21,7 @@ PORTAL_THRESHOLD = 0.5
 
 ROUND_BONUS_GAMMA = 1
 
-
+PORTAL_AVAILABLE = [0, 90, 40]
 MAX_ROUND = [0, 500, 400, 300]  # 每个棋盘最多轮数38*38 29*29 20*20
 HUGE_BONUS_GAMMA = [0, 0.5, 0.7, 0.9]
 OPERATION_NUM = 5  # 操作数（上下左右不动）
@@ -54,6 +54,7 @@ class Space(enum.Enum):
     MAGNET_BEAN = 5
     SHIELD_BEAN = 6
     DOUBLE_BEAN = 7
+    PORTAL = 8
 
 
 class Skill(enum.Enum):
@@ -69,8 +70,7 @@ class Event(enum.Enum):
     SHEILD_DESTROYED = 1
     # 2 and 3 should not occur simutaneously
     FINISH_LEVEL = 2
-    TIMEOUT = 3
-
+    TIMEOUT = 3 
 
 class Move(enum.Enum):
     STAY = 0
