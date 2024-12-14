@@ -11,6 +11,7 @@ from .utils import *
 
 
 class PacmanEnv(gym.Env):
+    """吃豆人游戏的抽象类，管理游戏状态、玩家操作、游戏逻辑等"""
     metadata = {"render_modes": ["local", "logic", "ai"]}
 
     def __init__(
@@ -44,9 +45,9 @@ class PacmanEnv(gym.Env):
         self._ghost_action_space = spaces.MultiDiscrete(np.ones(3) * OPERATION_NUM)
         self.render_mode = render_mode
 
-    # return the current state of the game
     def render(self, mode="logic"):
-        if mode == "local":
+        """渲染&输出游戏状态"""
+        if mode == "local": # 本地模式
             for i in range(self._size - 1, -1, -1):  # 翻转y轴
                 for j in range(self._size):
                     if self._pacman.get_coord().tolist() == [i, j]:
@@ -74,8 +75,7 @@ class PacmanEnv(gym.Env):
                     elif self._board[i][j] == Space.PORTAL.value:
                         print("\033[1;48;5;93m  \033[0m", end="")  # 传送门：深紫色
                 print()
-
-        elif mode == "logic":  # 返回一个字典
+        elif mode == "logic":  # 通信模式
             return_dict = {
                 "round": self._round,
                 "level": self._level,
@@ -92,6 +92,7 @@ class PacmanEnv(gym.Env):
             return return_dict
 
     def reset(self):
+        """初始化(重置)游戏状态"""
         self._level += 1  # 0 1 2 3
         self._size = INITIAL_BOARD_SIZE[self._level]
         # regenerate at the corner
@@ -146,7 +147,8 @@ class PacmanEnv(gym.Env):
         self._pacman_score = self.get_pacman_score()
         self._ghosts_score = self.get_ghosts_score()
 
-    def step(self, pacmanAction: int, ghostAction: List[int]):
+    def step(self, pacmanAction: int, ghostAction: List[int]) -> tuple:
+        """主逻辑：根据玩家的操作，更新游戏状态，返回('是否结束', '是否吃完所有豆子')"""
         self._round += 1
         self._event_list = []
         pacman_action = Direction(pacmanAction)
@@ -241,16 +243,6 @@ class PacmanEnv(gym.Env):
                 ):
                     count_remain_beans += 1
 
-        if self._portal_available:
-            if self._portal_coord.tolist() in self._pacman_step_block:
-                if count_remain_beans == 0:
-                    self._pacman.update_score(EAT_ALL_BEANS)
-                    self.update_all_score()
-                return self.finish_level_in_advance()
-
-        if self._level != MAX_LEVEL and self._round >= PORTAL_AVAILABLE[self._level]:
-            self._portal_available = True
-
         for i in range(1, len(parsed_pacman_step_block)):
             for j in range(3):
                 if (
@@ -261,7 +253,7 @@ class PacmanEnv(gym.Env):
                 ):
                     caught = True
                     break
-
+        respwan = False
         if caught:
             if not self._pacman.break_sheild():
                 self._ghosts[i].update_score(DESTORY_PACMAN_SHIELD)
@@ -269,6 +261,7 @@ class PacmanEnv(gym.Env):
                 self._pacman_continuous_alive = 0
                 self._event_list.append(Event.SHEILD_DESTROYED)
             else:
+                respwan = True
                 self._pacman.update_score(EATEN_BY_GHOST)
                 self._ghosts[i].update_score(EAT_PACMAN)
                 self.update_all_score()
@@ -278,23 +271,51 @@ class PacmanEnv(gym.Env):
                 self._last_skill_status = self._pacman.get_skills_status()
                 self._pacman.set_coord(np.array(self.find_distant_emptyspace()))
                 self._event_list.append(Event.EATEN_BY_GHOST)
+                
+            if self._eaten_time >= GHOST_HUGE_BONUS_THRESHOLD:
+                for ghost in self._ghosts:
+                    ghost.update_score(GHOST_HUGE_BONUS)
+                self.update_all_score()
+                self._eaten_time = 0
         else:
             self._pacman_continuous_alive += 1
             if self._pacman_continuous_alive >= PACMAN_HUGE_BONUS_THRESHOLD:
                 self._pacman.update_score(PACMAN_HUGE_BONUS)
                 self.update_all_score()
                 self._pacman_continuous_alive = 0
+                
+        if self._portal_available and not respwan:
+            if self._portal_coord.tolist() in self._pacman_step_block:
+                eaten_all_beans = False
+                if count_remain_beans == 0:
+                    eaten_all_beans = True
+                    self._pacman.update_score(EAT_ALL_BEANS)
+                    self.update_all_score()
+                self._pacman.update_score(
+                    (MAX_ROUND[self._level] - self._round) * ROUND_BONUS_GAMMA
+                )
+                self.update_all_score()
+                self._pacman.clear_skills()
+                self._event_list.append(Event.FINISH_LEVEL)
+                self._pacman_continuous_alive = 0
+                self._eaten_time = 0
+                return (True, eaten_all_beans)
 
-        if caught and self._eaten_time >= GHOST_HUGE_BONUS_THRESHOLD:
-            for ghost in self._ghosts:
-                ghost.update_score(GHOST_HUGE_BONUS)
-            self.update_all_score()
-            self._eaten_time = 0
+        if self._level != MAX_LEVEL and self._round >= PORTAL_AVAILABLE[self._level]:
+            self._portal_available = True
 
         if count_remain_beans == 0:
             self._pacman.update_score(EAT_ALL_BEANS)
             self.update_all_score()
-            return self.finish_level_in_advance()
+            self._pacman.update_score(
+                (MAX_ROUND[self._level] - self._round) * ROUND_BONUS_GAMMA
+            )
+            self.update_all_score()
+            self._pacman.clear_skills()
+            self._event_list.append(Event.FINISH_LEVEL)
+            self._pacman_continuous_alive = 0
+            self._eaten_time = 0
+            return (True, True)
 
         # 超时
         if self._round >= MAX_ROUND[self._level]:
@@ -305,22 +326,10 @@ class PacmanEnv(gym.Env):
             self._event_list.append(Event.TIMEOUT)
             self._pacman_continuous_alive = 0
             self._eaten_time = 0
-            return (self._board, [self._pacman_score, self._ghosts_score], True)
+            return (True, False)
 
         # 正常
-        return self._board, [self._pacman_score, self._ghosts_score], False
-
-    def finish_level_in_advance(self):
-        """提前结束本关"""
-        self._pacman.update_score(
-            (MAX_ROUND[self._level] - self._round) * ROUND_BONUS_GAMMA
-        )
-        self.update_all_score()
-        self._pacman.clear_skills()
-        self._event_list.append(Event.FINISH_LEVEL)
-        self._pacman_continuous_alive = 0
-        self._eaten_time = 0
-        return (self._board, [self._pacman_score, self._ghosts_score], True)
+        return (False, False)
 
     def get_pacman_score(self):
         """功能函数：获取吃豆人的分数"""
@@ -353,15 +362,19 @@ class PacmanEnv(gym.Env):
         return coord
 
     def observation_space(self):
+        """AI接口：获取观察空间"""
         return self._observation_space
 
     def pacman_action_space(self):
+        """AI接口：获取吃豆人的操作空间"""
         return self._pacman_action_space
 
     def ghost_action_space(self):
+        """AI接口：获取幽灵的操作空间"""
         return self._ghost_action_space
 
     def game_state(self):
+        """AI接口：获取游戏状态"""
         return GameState(
             level=self._level,
             round=self._round,
