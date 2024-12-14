@@ -25,7 +25,7 @@ def final_boardgenerator(actual_size, level):
     
     # fix：在最中间的3*3的可走区域，加一个传送门
     flag = False
-    middle = actual_size / 2
+    middle = actual_size // 2 # fix:integer here
     if level == 3:
         flag = True # fix:level3 不设置传送门
     
