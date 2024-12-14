@@ -55,23 +55,23 @@ class PacmanEnv(gym.Env):
                     if [i, j] in [ghost.get_coord().tolist() for ghost in self._ghosts]:
                         print("\033[1;48;5;199m  \033[0m", end="")  # 幽灵：粉红色
                         continue
-                    if self._board[i][j] == 0:
+                    if self._board[i][j] == Space.WALL.value:
                         print("\033[1;48;5;160m  \033[0m", end="")  # 墙：深红色
-                    elif self._board[i][j] == 1:
+                    elif self._board[i][j] == Space.EMPTY.value:
                         print("\033[1;48;5;244m  \033[0m", end="")  # 空地：灰色
-                    elif self._board[i][j] == 2:
+                    elif self._board[i][j] == Space.REGULAR_BEAN.value:
                         print("\033[1;48;5;39m  \033[0m", end="")  # 普通豆子：天蓝色
-                    elif self._board[i][j] == 3:
+                    elif self._board[i][j] == Space.BONUS_BEAN.value:
                         print("\033[1;48;5;82m  \033[0m", end="")  # 奖励豆子：浅绿色
-                    elif self._board[i][j] == 4:
+                    elif self._board[i][j] == Space.SPEED_BEAN.value:
                         print("\033[1;48;5;214m  \033[0m", end="")  # 速度豆子：橙色
-                    elif self._board[i][j] == 5:
+                    elif self._board[i][j] == Space.MAGNET_BEAN.value:
                         print("\033[1;48;5;165m  \033[0m", end="")  # 磁铁豆子：紫色
-                    elif self._board[i][j] == 6:
+                    elif self._board[i][j] == Space.SHIELD_BEAN.value:
                         print("\033[1;48;5;51m  \033[0m", end="")  # 护盾豆子：青色
-                    elif self._board[i][j] == 7:
+                    elif self._board[i][j] == Space.DOUBLE_BEAN.value:
                         print("\033[1;48;5;208m  \033[0m", end="")  # *2豆子：深橙色
-                    elif self._board[i][j] == 8:
+                    elif self._board[i][j] == Space.PORTAL.value:
                         print("\033[1;48;5;93m  \033[0m", end="")  # 传送门：深紫色
                 print()
 
