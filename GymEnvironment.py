@@ -248,7 +248,7 @@ class PacmanEnv(gym.Env):
                     self.update_all_score()
                 return self.finish_level_in_advance()
 
-        if self._level != 3 and self._round >= PORTAL_AVAILABLE[self._level]:
+        if self._level != MAX_LEVEL and self._round >= PORTAL_AVAILABLE[self._level]:
             self._portal_available = True
 
         for i in range(1, len(parsed_pacman_step_block)):

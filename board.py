@@ -58,7 +58,7 @@ def final_boardgenerator(actual_size, level):
                 t += 1
                 
 
-    return final_board, t, [a, b]
+    return final_board, t, np.array([a, b])
     
 
 def boardgenerator(actual_size):
