@@ -14,7 +14,7 @@ def final_boardgenerator(actual_size, level):
     original_board = np.full((20 * num_blocks, 20 * num_blocks), Space.REGULAR_BEAN.value)
     
     if num_blocks == 1:
-        original_board = boardgenerator(actual_size)
+        original_board = boardgenerator()
     
     else:
         original_board[0:20, 0:20] = boardgenerator(actual_size)
@@ -57,11 +57,13 @@ def final_boardgenerator(actual_size, level):
             if final_board[i][j] == Space.REGULAR_BEAN.value or final_board[i][j] == Space.BONUS_BEAN.value or final_board[i][j] == Space.SPEED_BEAN.value or final_board[i][j] == Space.MAGNET_BEAN.value or final_board[i][j] == Space.SHIELD_BEAN.value or final_board[i][j] == Space.DOUBLE_BEAN.value:
                 t += 1
                 
-
+    # fix: no beans at corners(pacman and ghosts places)
+    final_board[1, 1] = final_board[1, actual_size - 2] = final_board[actual_size - 2, 1] = final_board[actual_size - 2, actual_size - 2] = 1
+    
     return final_board, t, np.array([a, b])
     
 
-def boardgenerator(actual_size):
+def boardgenerator():
     # 创建20x20的二维数组，所有元素初始化为2（普通豆子）
     size = 20
     board = np.full((size, size), 2)
