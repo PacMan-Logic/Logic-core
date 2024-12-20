@@ -95,6 +95,9 @@ class Space(enum.Enum):
     DOUBLE_BEAN = 7
     PORTAL = 8
 
+BEANS_ITERATOR = [Space.REGULAR_BEAN.value, Space.BONUS_BEAN.value, Space.SPEED_BEAN.value, Space.MAGNET_BEAN.value, Space.SHIELD_BEAN.value, Space.DOUBLE_BEAN.value]
+SPECIAL_BEANS_ITERATOR = [Space.SPEED_BEAN.value, Space.MAGNET_BEAN.value, Space.SHIELD_BEAN.value, Space.DOUBLE_BEAN.value, Space.BONUS_BEAN.value]
+SKILL_BEANS_ITERATOR = [Space.SPEED_BEAN.value, Space.MAGNET_BEAN.value, Space.SHIELD_BEAN.value, Space.DOUBLE_BEAN.value]
 
 # Event
 class Event(enum.Enum):
