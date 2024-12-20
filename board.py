@@ -17,10 +17,10 @@ def final_boardgenerator(actual_size, level):
         original_board = boardgenerator()
     
     else:
-        original_board[0:20, 0:20] = boardgenerator(actual_size)
-        original_board[0:20, (size - 2):(size + 18)] = boardgenerator(actual_size)
-        original_board[(size - 2):(size + 18), 0:20] = boardgenerator(actual_size)
-        original_board[(size - 2): (size + 18), (size - 2): (size + 18)] = boardgenerator(actual_size)
+        original_board[0:20, 0:20] = boardgenerator()
+        original_board[0:20, (size - 2):(size + 18)] = boardgenerator()
+        original_board[(size - 2):(size + 18), 0:20] = boardgenerator()
+        original_board[(size - 2): (size + 18), (size - 2): (size + 18)] = boardgenerator()
     
     final_board = original_board[0:actual_size, 0:actual_size]
     
