@@ -109,6 +109,7 @@ class Event(enum.Enum):
 # 选手可获取的接口
 @dataclass
 class GameState:
+    space_info: dict
     level: int
     round: int
     board_size: int

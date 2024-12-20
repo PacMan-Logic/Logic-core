@@ -12,6 +12,7 @@ from .utils import *
 
 class PacmanEnv(gym.Env):
     """吃豆人游戏的抽象类，管理游戏状态、玩家操作、游戏逻辑等"""
+
     metadata = {"render_modes": ["local", "logic", "ai"]}
 
     def __init__(
@@ -47,7 +48,7 @@ class PacmanEnv(gym.Env):
 
     def render(self, mode="logic"):
         """渲染&输出游戏状态"""
-        if mode == "local": # 本地模式
+        if mode == "local":  # 本地模式
             for i in range(self._size - 1, -1, -1):  # 翻转y轴
                 for j in range(self._size):
                     if self._pacman.get_coord().tolist() == [i, j]:
@@ -129,7 +130,8 @@ class PacmanEnv(gym.Env):
         }
         return return_dict
 
-    def ai_reset(self, dict):  # Note: this function is used for AI to reset the game
+    def ai_reset(self, dict):
+        """初始化(重置)AI游戏状态"""
         self._level = dict["level"]
         self._size = INITIAL_BOARD_SIZE[self._level]
         for i in range(3):
@@ -164,9 +166,7 @@ class PacmanEnv(gym.Env):
         # 吃豆人移动
         for _ in range(1 if self._last_skill_status[Skill.SPEED_UP.value] == 0 else 2):
             self._pacman.eat_bean(self._board)
-            appendix = (
-                self._pacman.get_coord() + direction_to_offset(pacman_action)
-            )
+            appendix = self._pacman.get_coord() + direction_to_offset(pacman_action)
             success = self._pacman.try_move(self._board, pacman_action)
             if not success:
                 appendix += PACMAN_HIT_OFFSET
@@ -174,9 +174,8 @@ class PacmanEnv(gym.Env):
         self.update_all_score()
         # 幽灵移动
         for i in range(len(self._ghosts)):
-            appendix = (
-                self._ghosts[i].get_coord()
-                + direction_to_offset(ghost_actions[i])
+            appendix = self._ghosts[i].get_coord() + direction_to_offset(
+                ghost_actions[i]
             )
             success = self._ghosts[i].try_move(self._board, ghost_actions[i])
             if not success:
@@ -255,12 +254,12 @@ class PacmanEnv(gym.Env):
                     break
         respwan = False
         if caught:
-            if not self._pacman.break_sheild():
+            if not self._pacman.break_sheild():  # 有护盾保护
                 self._ghosts[i].update_score(DESTORY_PACMAN_SHIELD)
                 self.update_all_score()
                 self._pacman_continuous_alive = 0
                 self._event_list.append(Event.SHEILD_DESTROYED)
-            else:
+            else:  # 没有护盾保护
                 respwan = True
                 self._pacman.update_score(EATEN_BY_GHOST)
                 self._ghosts[i].update_score(EAT_PACMAN)
@@ -271,20 +270,24 @@ class PacmanEnv(gym.Env):
                 self._last_skill_status = self._pacman.get_skills_status()
                 self._pacman.set_coord(np.array(self.find_distant_emptyspace()))
                 self._event_list.append(Event.EATEN_BY_GHOST)
-                
-            if self._eaten_time >= GHOST_HUGE_BONUS_THRESHOLD:
+
+            if (
+                self._eaten_time >= GHOST_HUGE_BONUS_THRESHOLD
+            ):  # 被吃掉次数达到阈值，幽灵获得额外加分
                 for ghost in self._ghosts:
                     ghost.update_score(GHOST_HUGE_BONUS)
                 self.update_all_score()
                 self._eaten_time = 0
         else:
             self._pacman_continuous_alive += 1
-            if self._pacman_continuous_alive >= PACMAN_HUGE_BONUS_THRESHOLD:
+            if (
+                self._pacman_continuous_alive >= PACMAN_HUGE_BONUS_THRESHOLD
+            ):  # 连续存活次数达到阈值，吃豆人获得额外加分
                 self._pacman.update_score(PACMAN_HUGE_BONUS)
                 self.update_all_score()
                 self._pacman_continuous_alive = 0
-                
-        if self._portal_available and not respwan:
+
+        if self._portal_available and not respwan:  # 传送门开启且吃豆人未被吃掉
             if self._portal_coord.tolist() in self._pacman_step_block:
                 eaten_all_beans = False
                 if count_remain_beans == 0:
@@ -301,10 +304,12 @@ class PacmanEnv(gym.Env):
                 self._eaten_time = 0
                 return (True, eaten_all_beans)
 
-        if self._level != MAX_LEVEL and self._round >= PORTAL_AVAILABLE[self._level]:
+        if (
+            self._level != MAX_LEVEL and self._round >= PORTAL_AVAILABLE[self._level]
+        ):  # 传送门开启
             self._portal_available = True
 
-        if count_remain_beans == 0:
+        if count_remain_beans == 0:  # 吃豆人吃掉所有豆子
             self._pacman.update_score(EAT_ALL_BEANS)
             self.update_all_score()
             self._pacman.update_score(
@@ -328,7 +333,7 @@ class PacmanEnv(gym.Env):
             self._eaten_time = 0
             return (True, False)
 
-        # 正常
+        # 仍在关卡中
         return (False, False)
 
     def get_pacman_score(self):
@@ -376,6 +381,11 @@ class PacmanEnv(gym.Env):
     def game_state(self):
         """AI接口：获取游戏状态"""
         return GameState(
+            space_info={
+                "observation_space": self._observation_space,
+                "pacman_action_space": self._pacman_action_space,
+                "ghost_action_space": self._ghost_action_space,
+            },
             level=self._level,
             round=self._round,
             board_size=self._size,

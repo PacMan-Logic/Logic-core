@@ -26,6 +26,3 @@ class Ghost:
             return False
         self._coord = new_coord
         return True
-
-    def update_score(self, points):
-        self._score += points
