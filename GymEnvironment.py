@@ -143,6 +143,7 @@ class PacmanEnv(gym.Env):
         self._board = np.array(dict["board"])
         self._beannumber = dict["beannumber"]
         self._portal_coord = np.array(dict["portal_coord"])
+        self._portal_available = False
         return
 
     def update_all_score(self):
