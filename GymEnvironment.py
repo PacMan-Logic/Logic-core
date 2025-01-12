@@ -296,7 +296,7 @@ class PacmanEnv(gym.Env):
                     self._pacman.update_score(EAT_ALL_BEANS)
                     self.update_all_score()
                 self._pacman.update_score(
-                    (int)(MAX_ROUND[self._level] - self._round) * ROUND_BONUS_GAMMA
+                    (int)((MAX_ROUND[self._level] - self._round) * ROUND_BONUS_GAMMA)
                 )
                 self.update_all_score()
                 self._pacman.clear_skills()
@@ -314,7 +314,7 @@ class PacmanEnv(gym.Env):
             self._pacman.update_score(EAT_ALL_BEANS)
             self.update_all_score()
             self._pacman.update_score(
-                (int)(MAX_ROUND[self._level] - self._round) * ROUND_BONUS_GAMMA
+                (int)((MAX_ROUND[self._level] - self._round) * ROUND_BONUS_GAMMA)
             )
             self.update_all_score()
             self._pacman.clear_skills()
