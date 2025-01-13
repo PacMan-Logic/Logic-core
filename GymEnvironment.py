@@ -190,7 +190,7 @@ class PacmanEnv(gym.Env):
 
         # 吃豆人移动
         for _ in range(1 if self._last_skill_status[Skill.SPEED_UP.value] == 0 else 2):
-            self._pacman.eat_bean(self._board)
+            pacman_reward += self._pacman.eat_bean(self._board)
             appendix = self._pacman.get_coord() + direction_to_offset(pacman_action)
             success = self._pacman.try_move(self._board, pacman_action)
             if not success:
@@ -257,7 +257,7 @@ class PacmanEnv(gym.Env):
         # 技能时间更新
         self._pacman.diminish_skill_time()
         # 避免出现最后一轮明明达到了最后一个豆子，但是还是会被判定为超时的问题
-        self._pacman.eat_bean(self._board)
+        pacman_reward += self._pacman.eat_bean(self._board)
 
         count_remain_beans = 0
         for i in range(self._size):

@@ -17,16 +17,17 @@ class Pacman:
         return reward
 
     def just_eat(self, board, x, y):
+        reward = 0
         if not in_movable_board([x, y], self._level):
             return
 
         if board[x][y] == Space.REGULAR_BEAN.value:
             board[x][y] = Space.EMPTY.value
-            self.update_score(1)
+            reward += self.update_score(1)
 
         elif board[x][y] == Space.BONUS_BEAN.value:
             board[x][y] = Space.EMPTY.value
-            self.update_score(2)
+            reward += self.update_score(2)
 
         elif board[x][y] == Space.SPEED_BEAN.value:
             board[x][y] = Space.EMPTY.value
@@ -44,15 +45,20 @@ class Pacman:
             board[x][y] = Space.EMPTY.value
             self.acquire_skill(Skill.DOUBLE_SCORE)
 
+        return reward
+
     def eat_bean(self, board):
+        reward = 0
         x, y = self._coord
         if self._skill_status[Skill.MAGNET.value] == 0:
-            self.just_eat(board, x, y)
+            reward += self.just_eat(board, x, y)
 
         else:
             for i in range(-1, 2):
                 for j in range(-1, 2):
-                    self.just_eat(board, x + i, y + j)
+                    reward += self.just_eat(board, x + i, y + j)
+
+        return reward
 
     def get_skills_status(self):
         return self._skill_status.copy()
