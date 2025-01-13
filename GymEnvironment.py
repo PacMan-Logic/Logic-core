@@ -150,8 +150,30 @@ class PacmanEnv(gym.Env):
         self._pacman_score = self.get_pacman_score()
         self._ghosts_score = self.get_ghosts_score()
 
-    def step(self, pacmanAction: int, ghostAction: List[int]) -> tuple:
-        """主逻辑：根据玩家的操作，更新游戏状态，返回('是否结束', '是否吃完所有豆子')"""
+    def step_return_dict(self):
+        return_dict = {
+            "space_info": {
+                "observation_space": self._observation_space,
+                "pacman_action_space": self._pacman_action_space,
+                "ghost_action_space": self._ghost_action_space,
+            },
+            "level": self._level,
+            "round": self._round,
+            "board_size": self._size,
+            "board": self._board,
+            "pacman_skill_status": np.array(self._pacman.get_skills_status()),
+            "pacman_pos": self._pacman.get_coord(),
+            "ghosts_pos": np.array([ghost.get_coord() for ghost in self._ghosts]),
+            "pacman_score": self._pacman_score,
+            "ghosts_score": self._ghosts_score,
+            "portal_available": self._portal_available,
+            "portal_coord": self._portal_coord,
+        }
+        return return_dict
+
+
+    def step(self, pacmanAction: int, ghostAction: List[int]) :
+        """主逻辑：根据玩家的操作，更新游戏状态，返回(局面信息,吃豆人reward,幽灵reward,当前关卡是否结束,是否吃完所有的豆子)"""
         self._round += 1
         self._event_list = []
         pacman_action = Direction(pacmanAction)
@@ -159,6 +181,8 @@ class PacmanEnv(gym.Env):
         self._ghosts_step_block = [[], [], []]
         self._pacman_step_block = []
         self._last_skill_status = self._pacman.get_skills_status()
+        pacman_reward = 0
+        ghosts_reward = 0
 
         self._pacman_step_block.append(self._pacman.get_coord().tolist())
         for i in range(3):
@@ -256,14 +280,14 @@ class PacmanEnv(gym.Env):
         respwan = False
         if caught:
             if not self._pacman.break_sheild():  # 有护盾保护
-                self._ghosts[i].update_score(DESTORY_PACMAN_SHIELD)
+                ghosts_reward += self._ghosts[i].update_score(DESTORY_PACMAN_SHIELD)
                 self.update_all_score()
                 self._pacman_continuous_alive = 0
                 self._event_list.append(Event.SHEILD_DESTROYED)
             else:  # 没有护盾保护
                 respwan = True
-                self._pacman.update_score(EATEN_BY_GHOST)
-                self._ghosts[i].update_score(EAT_PACMAN)
+                pacman_reward += self._pacman.update_score(EATEN_BY_GHOST)
+                ghosts_reward += self._ghosts[i].update_score(EAT_PACMAN)
                 self.update_all_score()
                 self._eaten_time += 1
                 self._pacman_continuous_alive = 0
@@ -276,7 +300,7 @@ class PacmanEnv(gym.Env):
                 self._eaten_time >= GHOST_HUGE_BONUS_THRESHOLD
             ):  # 被吃掉次数达到阈值，幽灵获得额外加分
                 for ghost in self._ghosts:
-                    ghost.update_score(GHOST_HUGE_BONUS)
+                    ghosts_reward += ghost.update_score(GHOST_HUGE_BONUS)
                 self.update_all_score()
                 self._eaten_time = 0
         else:
@@ -284,7 +308,7 @@ class PacmanEnv(gym.Env):
             if (
                 self._pacman_continuous_alive >= PACMAN_HUGE_BONUS_THRESHOLD
             ):  # 连续存活次数达到阈值，吃豆人获得额外加分
-                self._pacman.update_score(PACMAN_HUGE_BONUS)
+                pacman_reward += self._pacman.update_score(PACMAN_HUGE_BONUS)
                 self.update_all_score()
                 self._pacman_continuous_alive = 0
 
@@ -293,9 +317,9 @@ class PacmanEnv(gym.Env):
                 eaten_all_beans = False
                 if count_remain_beans == 0:
                     eaten_all_beans = True
-                    self._pacman.update_score(EAT_ALL_BEANS)
+                    pacman_reward += self._pacman.update_score(EAT_ALL_BEANS)
                     self.update_all_score()
-                self._pacman.update_score(
+                pacman_reward += self._pacman.update_score(
                     (int)((MAX_ROUND[self._level] - self._round) * ROUND_BONUS_GAMMA)
                 )
                 self.update_all_score()
@@ -303,7 +327,7 @@ class PacmanEnv(gym.Env):
                 self._event_list.append(Event.FINISH_LEVEL)
                 self._pacman_continuous_alive = 0
                 self._eaten_time = 0
-                return (True, eaten_all_beans)
+                return (self.step_return_dict(), pacman_reward, ghosts_reward, True, eaten_all_beans)
 
         if (
             self._level != MAX_LEVEL and self._round >= PORTAL_AVAILABLE[self._level]
@@ -311,9 +335,9 @@ class PacmanEnv(gym.Env):
             self._portal_available = True
 
         if count_remain_beans == 0:  # 吃豆人吃掉所有豆子
-            self._pacman.update_score(EAT_ALL_BEANS)
+            pacman_reward += self._pacman.update_score(EAT_ALL_BEANS)
             self.update_all_score()
-            self._pacman.update_score(
+            pacman_reward += self._pacman.update_score(
                 (int)((MAX_ROUND[self._level] - self._round) * ROUND_BONUS_GAMMA)
             )
             self.update_all_score()
@@ -321,21 +345,21 @@ class PacmanEnv(gym.Env):
             self._event_list.append(Event.FINISH_LEVEL)
             self._pacman_continuous_alive = 0
             self._eaten_time = 0
-            return (True, True)
+            return (self.step_return_dict(), pacman_reward, ghosts_reward, True, True)
 
         # 超时
         if self._round >= MAX_ROUND[self._level]:
             for i in self._ghosts:
-                i.update_score(PREVENT_PACMAN_EAT_ALL_BEANS)
+                ghosts_reward += i.update_score(PREVENT_PACMAN_EAT_ALL_BEANS)
             self.update_all_score()
             self._pacman.clear_skills()
             self._event_list.append(Event.TIMEOUT)
             self._pacman_continuous_alive = 0
             self._eaten_time = 0
-            return (True, False)
+            return (self.step_return_dict(), pacman_reward, ghosts_reward, True, False)
 
         # 仍在关卡中
-        return (False, False)
+        return (self.step_return_dict(), pacman_reward, ghosts_reward, False, False)
 
     def get_pacman_score(self):
         """功能函数：获取吃豆人的分数"""

@@ -15,6 +15,7 @@ class Ghost:
 
     def update_score(self, points):
         self._score += points
+        return points
 
     def get_score(self):
         return self._score
