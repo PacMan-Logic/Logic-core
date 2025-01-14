@@ -18,7 +18,7 @@ class Ghost:
         return points
 
     def get_score(self):
-        return self._score
+        return self._score.copy()
 
     def try_move(self, board, direction):
         offset = direction_to_offset(direction)

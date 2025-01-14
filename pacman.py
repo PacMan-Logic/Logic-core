@@ -87,7 +87,7 @@ class Pacman:
         self._portal_coord = portal_coord
 
     def get_portal_coord(self):
-        return self._portal_coord
+        return self._portal_coord.copy()
 
     def diminish_skill_time(
         self,
@@ -100,7 +100,7 @@ class Pacman:
             self._skill_status[Skill.SPEED_UP.value] -= 1
 
     def get_score(self):
-        return self._score
+        return self._score.copy()
 
     def break_sheild(self):
         if self._skill_status[Skill.SHIELD.value] > 0:
