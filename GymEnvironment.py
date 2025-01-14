@@ -96,6 +96,9 @@ class PacmanEnv(gym.Env):
         """初始化(重置)游戏状态"""
         self._level += 1  # 0 1 2 3
         self._size = INITIAL_BOARD_SIZE[self._level]
+        self._observation_space = spaces.MultiDiscrete(
+            np.ones((self._size, self._size)) * SPACE_CATEGORY
+        )
         # regenerate at the corner
         coords = [
             [1, 1],
@@ -134,6 +137,9 @@ class PacmanEnv(gym.Env):
         """初始化(重置)AI游戏状态"""
         self._level = dict["level"]
         self._size = INITIAL_BOARD_SIZE[self._level]
+        self._observation_space = spaces.MultiDiscrete(
+            np.ones((self._size, self._size)) * SPACE_CATEGORY
+        )
         for i in range(3):
             self._ghosts[i].set_coord(np.array(dict["ghosts_coord"][i]))
         self._pacman.set_coord(np.array(dict["pacman_coord"]))
