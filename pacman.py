@@ -100,7 +100,7 @@ class Pacman:
             self._skill_status[Skill.SPEED_UP.value] -= 1
 
     def get_score(self):
-        return self._score.copy()
+        return self._score
 
     def break_sheild(self):
         if self._skill_status[Skill.SHIELD.value] > 0:
