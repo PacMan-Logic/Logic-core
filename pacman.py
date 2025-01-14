@@ -19,7 +19,7 @@ class Pacman:
     def just_eat(self, board, x, y):
         reward = 0
         if not in_movable_board([x, y], self._level):
-            return
+            return 0
 
         if board[x][y] == Space.REGULAR_BEAN.value:
             board[x][y] = Space.EMPTY.value
