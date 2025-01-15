@@ -100,7 +100,7 @@ class PacmanEnv(gym.Env):
             "board": self._board,
             "pacman_skill_status": np.array(self._pacman.get_skills_status()),
             "pacman_coord": self._pacman.get_coord(),
-            "ghosts_coord": np.array([ghost.get_coord() for ghost in self._ghosts]),
+            "ghosts_coord": [ghost.get_coord() for ghost in self._ghosts],
             "score": [self._pacman_score, self._ghosts_score],
             "beannumber": self._beannumber,
             "portal_available": self._portal_available,
