@@ -272,6 +272,7 @@ class PacmanEnv(gym.Env):
         self._pacman.diminish_skill_time()
         # 避免出现最后一轮明明达到了最后一个豆子，但是还是会被判定为超时的问题
         pacman_reward += self._pacman.eat_bean(self._board)
+        self.update_all_score()
 
         count_remain_beans = 0
         for i in range(self._size):
