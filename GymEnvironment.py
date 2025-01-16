@@ -110,7 +110,7 @@ class PacmanEnv(gym.Env):
 
     def reset(self, mode="logic"):
         """初始化游戏状态"""
-        if mode == "local" and self.get_level == 3:
+        if mode == "local" and self.get_level() == 3:
             self._level = 1
         else:
             self._level += 1  # 0 1 2 3
