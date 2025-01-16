@@ -42,9 +42,9 @@ class Skill(enum.Enum):
 
 # Ghost bonus
 # NOTE: GHOST_HUGE_BONUS and PREVENT_PACMAN_EAT_ALL_BEANS will be added for all three ghosts!
-GHOST_HUGE_BONUS_THRESHOLD = 3
-GHOST_HUGE_BONUS = 50
-PREVENT_PACMAN_EAT_ALL_BEANS = 30
+GHOST_HUGE_BONUS_THRESHOLD = 5
+GHOST_HUGE_BONUS = 20
+PREVENT_PACMAN_EAT_ALL_BEANS = 25
 EAT_PACMAN = 50
 DESTORY_PACMAN_SHIELD = 10
 
@@ -59,7 +59,6 @@ MAX_LEVEL = 3  # 关卡数
 OPERATION_NUM = 5  # 操作数（上下左右不动）
 SKILL_NUM = 4
 
-
 class Direction(enum.Enum):
     STAY = 0
     UP = 1
@@ -67,14 +66,12 @@ class Direction(enum.Enum):
     DOWN = 3
     RIGHT = 4
 
-
 class Update(enum.Enum):
     STAY = (0, 0)
     UP = (1, 0)
     LEFT = (0, -1)
     DOWN = (-1, 0)
     RIGHT = (0, 1)
-
 
 # Board
 INITIAL_BOARD_SIZE = [0, 38, 29, 20]
