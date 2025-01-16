@@ -415,9 +415,10 @@ class PacmanEnv(gym.Env):
             board=self._board,
             pacman_skill_status=self._pacman.get_skills_status(),
             pacman_pos=self._pacman.get_coord(),
-            ghosts_pos=np.array([ghost.get_coord() for ghost in self._ghosts]),
+            ghosts_pos=[ghost.get_coord() for ghost in self._ghosts],
             pacman_score=self._pacman_score,
             ghosts_score=self._ghosts_score,
+            beannumber=self._beannumber,
             portal_available=self._portal_available,
             portal_coord=self._portal_coord,
         )

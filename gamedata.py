@@ -119,8 +119,23 @@ class GameState:
     board: np.ndarray
     pacman_skill_status: list[int]
     pacman_pos: np.ndarray
-    ghosts_pos: np.ndarray
+    ghosts_pos: list[np.ndarray]
     pacman_score: int
     ghosts_score: int
+    beannumber: int
     portal_available: bool
     portal_coord: np.ndarray
+    def gamestate_to_statedict(self):
+        return {
+            "level": self.level,
+            "round": self.round,
+            "board_size": self.board_size,
+            "board": self.board,
+            "pacman_skill_status": np.array(self.pacman_skill_status),
+            "pacman_coord": self.pacman_pos,
+            "ghosts_coord": self.ghosts_pos,
+            "score": [self.pacman_score, self.ghosts_score],
+            "beannumber": self.beannumber,
+            "portal_available": self.portal_available,
+            "portal_coord": self.portal_coord,
+        }
