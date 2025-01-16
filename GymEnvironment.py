@@ -39,8 +39,6 @@ class PacmanEnv(gym.Env):
         self._ghosts_score = 0
         self._portal_coord = np.array([-1, -1])
 
-        self._start_dict = {}
-
         self._observation_space = spaces.MultiDiscrete(
             np.ones((size, size)) * SPACE_CATEGORY
         )
@@ -110,27 +108,12 @@ class PacmanEnv(gym.Env):
         }
         return return_dict
 
-    def reset_start(self):
-        """重置游戏状态"""
-        self._level = self._start_dict["level"]
-        self._round = 0
-        self._size = INITIAL_BOARD_SIZE[self._level]
-        self._observation_space = spaces.MultiDiscrete(
-            np.ones((self._size, self._size)) * SPACE_CATEGORY
-        )
-        for i in range(3):
-            self._ghosts[i].set_coord(np.array(self._start_dict["ghosts_coord"][i]))
-        self._pacman.set_coord(np.array(self._start_dict["pacman_coord"]))
-        self._ghosts_score = self._start_dict["score"][1]
-        self._pacman_score = self._start_dict["score"][0]
-        self._board = np.array(self._start_dict["board"])
-        self._beannumber = self._start_dict["beannumber"]
-        self._portal_coord = np.array(self._start_dict["portal_coord"])
-        self._portal_available = False
-
-    def reset(self):
+    def reset(self, mode="logic"):
         """初始化游戏状态"""
-        self._level += 1  # 0 1 2 3
+        if mode == "local" and self.get_level == 3:
+            self._level = 1
+        else:
+            self._level += 1  # 0 1 2 3
         self._round = 0
         self._size = INITIAL_BOARD_SIZE[self._level]
         self._observation_space = spaces.MultiDiscrete(
@@ -164,8 +147,6 @@ class PacmanEnv(gym.Env):
     def ai_reset(self, reset_dict):
         """初始化(重置)AI游戏状态"""
         self._level = reset_dict["level"]
-        if self._level == 1:
-            self._start_dict = reset_dict
         self._round = 0
         self._size = INITIAL_BOARD_SIZE[self._level]
         self._observation_space = spaces.MultiDiscrete(
