@@ -15,7 +15,7 @@ class Role(enum.Enum):
 
 
 # 与judger交互相关数据
-FIRST_MAX_AI_TIME = 2
+FIRST_MAX_AI_TIME = 20
 MAX_AI_TIME = 1
 MAX_PLAYER_TIME = 60
 MAX_LENGTH = 1024
