@@ -284,7 +284,7 @@ class PacmanEnv(gym.Env):
                 self._event_list.append(Event.SHEILD_DESTROYED)
             else:  # 没有护盾保护
                 respwan = True
-                pacman_reward += self._pacman.update_score(EATEN_BY_GHOST)
+                pacman_reward += self._pacman.update_bonus(EATEN_BY_GHOST)
                 ghosts_reward[ghost_num] += self._ghosts[ghost_num].update_score(EAT_PACMAN)
                 self.update_all_score()
                 self._eaten_time += 1
@@ -306,7 +306,7 @@ class PacmanEnv(gym.Env):
             if (
                 self._pacman_continuous_alive >= PACMAN_HUGE_BONUS_THRESHOLD
             ):  # 连续存活次数达到阈值，吃豆人获得额外加分
-                pacman_reward += self._pacman.update_score(PACMAN_HUGE_BONUS)
+                pacman_reward += self._pacman.update_bonus(PACMAN_HUGE_BONUS)
                 self.update_all_score()
                 self._pacman_continuous_alive = 0
 
@@ -315,9 +315,9 @@ class PacmanEnv(gym.Env):
                 eaten_all_beans = False
                 if count_remain_beans == 0:
                     eaten_all_beans = True
-                    pacman_reward += self._pacman.update_score(EAT_ALL_BEANS)
+                    pacman_reward += self._pacman.update_bonus(EAT_ALL_BEANS)
                     self.update_all_score()
-                pacman_reward += self._pacman.update_score(
+                pacman_reward += self._pacman.update_bonus(
                     (int)((MAX_ROUND[self._level] - self._round) * ROUND_BONUS_GAMMA)
                 )
                 self.update_all_score()
@@ -333,9 +333,9 @@ class PacmanEnv(gym.Env):
             self._portal_available = True
 
         if count_remain_beans == 0:  # 吃豆人吃掉所有豆子
-            pacman_reward += self._pacman.update_score(EAT_ALL_BEANS)
+            pacman_reward += self._pacman.update_bonus(EAT_ALL_BEANS)
             self.update_all_score()
-            pacman_reward += self._pacman.update_score(
+            pacman_reward += self._pacman.update_bonus(
                 (int)((MAX_ROUND[self._level] - self._round) * ROUND_BONUS_GAMMA)
             )
             self.update_all_score()

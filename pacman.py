@@ -11,6 +11,10 @@ class Pacman:
         self._board_size = 20
         self._portal_coord = np.array([-1, -1])
 
+    def update_bonus(self, points):
+        self._score += points
+        return points
+
     def update_score(self, points):
         reward = 2 * points if self._skill_status[Skill.DOUBLE_SCORE.value] > 0 else points
         self._score += reward
