@@ -373,21 +373,27 @@ class PacmanEnv(gym.Env):
         return self._level
 
     def find_distant_emptyspace(self):
-        """功能函数：找到距离幽灵最远的空地坐标，避免重生在幽灵附近"""
-        coord = []
-        max = 0
+        """功能函数：找到远离最近幽灵的空地坐标，避免重生在幽灵附近"""
+        best_coord = []
+        max_distance = 0
+
         for i in range(self._size):
             for j in range(self._size):
                 if self._board[i][j] == Space.EMPTY.value:
-                    sum = 0
-                    for k in self._ghosts:
-                        sum += abs(k.get_coord()[0] - i) + abs(k.get_coord()[1] - j)
-                    if sum > max:
-                        max = sum
-                        coord = [i, j]
-        if coord == []:
-            raise ValueError("No empty space found")
-        return coord
+                    min_distance = float("inf") 
+                    for ghost in self._ghosts: 
+                        ghost_x, ghost_y = ghost.get_coord()
+                        dist = abs(ghost_x - i) + abs(ghost_y - j)
+                        min_distance = min(min_distance, dist)
+
+                    if min_distance > max_distance:
+                        max_distance = min_distance
+                        best_coord = [i, j]
+
+        if not best_coord:
+            raise ValueError("没有找到可用的空地")
+
+        return best_coord
 
     def observation_space(self):
         """AI接口：获取观察空间"""
