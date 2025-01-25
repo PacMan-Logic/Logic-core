@@ -48,6 +48,14 @@ def final_boardgenerator(actual_size, level):
             final_board[x][y] = Space.SHIELD_BEAN.value
             iter += 1
     
+    if level == 3:
+        while iter < 4:
+            x = random.randint(1, size - 2)
+            y = random.randint(1, size - 2)
+            if final_board[x][y] == Space.EMPTY.value or final_board[x][y] == Space.REGULAR_BEAN.value:
+                final_board[x][y] = Space.SHIELD_BEAN.value
+                iter += 1
+                    
     # 在地图的边缘添加墙壁
     final_board[0, :] = final_board[-1, :] = final_board[:, 0] = final_board[:, -1] = 0
     
