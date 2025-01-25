@@ -179,6 +179,8 @@ def c_wall_generator(board, size, x, y):
         
     board[x][y + len] = Space.BONUS_BEAN.value
     board[x][y - len] = Space.BONUS_BEAN.value
+    board[x + len][y] = Space.BONUS_BEAN.value
+    board[x - len][y] = Space.BONUS_BEAN.value
    
     return board
 
@@ -201,5 +203,7 @@ def opposite_c_wall_generator(board, size, x, y):
        
     board[x][y - len] = Space.BONUS_BEAN.value
     board[x - len][y] = Space.BONUS_BEAN.value
+    board[x][y + len] = Space.BONUS_BEAN.value
+    board[x + len][y] = Space.BONUS_BEAN.value
     
     return board
