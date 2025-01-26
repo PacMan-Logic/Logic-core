@@ -277,11 +277,11 @@ class PacmanEnv(gym.Env):
                     break
         respwan = False
         if caught:
-            if not self._pacman.break_sheild():  # 有护盾保护
+            if not self._pacman.break_shield():  # 有护盾保护
                 ghosts_reward[ghost_num] += self._ghosts[ghost_num].update_score(DESTORY_PACMAN_SHIELD)
                 self.update_all_score()
                 self._pacman_continuous_alive = 0
-                self._event_list.append(Event.SHEILD_DESTROYED)
+                self._event_list.append(Event.SHIELD_DESTROYED)
             else:  # 没有护盾保护
                 respwan = True
                 pacman_reward += self._pacman.update_bonus(EATEN_BY_GHOST)

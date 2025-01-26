@@ -100,7 +100,7 @@ SKILL_BEANS_ITERATOR = [Space.SPEED_BEAN.value, Space.MAGNET_BEAN.value, Space.S
 class Event(enum.Enum):
     # 0 and 1 should not occur simutaneously
     EATEN_BY_GHOST = 0  # when eaten by ghost, there are two events to be rendered. first, there should be a animation of pacman being caught by ghost. then, the game should be paused for a while, and display a respawning animaiton after receiving next coord infomation.
-    SHEILD_DESTROYED = 1
+    SHIELD_DESTROYED = 1
     # 2 and 3 should not occur simutaneously
     FINISH_LEVEL = 2
     TIMEOUT = 3
