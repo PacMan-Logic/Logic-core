@@ -39,6 +39,7 @@ class Skill(enum.Enum):
     MAGNET = 2
     SHIELD = 3
 
+SKILL_NUM = len(Skill)
 
 # Ghost bonus
 # NOTE: GHOST_HUGE_BONUS and PREVENT_PACMAN_EAT_ALL_BEANS will be added for all three ghosts!
@@ -55,9 +56,6 @@ PORTAL_AVAILABLE = [0, 60, 50]
 MAX_ROUND = [0, 500, 400, 300]  # 每个棋盘最多轮数38*38 29*29 20*20
 MAX_LEVEL = 3  # 关卡数
 
-# Operation
-OPERATION_NUM = 5  # 操作数（上下左右不动）
-SKILL_NUM = 4
 
 class Direction(enum.Enum):
     STAY = 0
@@ -72,10 +70,12 @@ class Update(enum.Enum):
     LEFT = (0, -1)
     DOWN = (-1, 0)
     RIGHT = (0, 1)
+    
+# Operation
+OPERATION_NUM = len(Direction)  # 操作数（上下左右不动）
 
 # Board
 INITIAL_BOARD_SIZE = [0, 38, 29, 20]
-SPACE_CATEGORY = 9  # Note: 0:wall 1:empty 2:regular bean 3:bonus bean 4:speed bean 5:magnet bean 6:shield bean 7:*2 bean 8:portal
 
 PACMAN_HIT_OFFSET = -100
 GHOST_HIT_OFFSET = -200
@@ -92,9 +92,29 @@ class Space(enum.Enum):
     DOUBLE_BEAN = 7
     PORTAL = 8
 
-BEANS_ITERATOR = [Space.REGULAR_BEAN.value, Space.BONUS_BEAN.value, Space.SPEED_BEAN.value, Space.MAGNET_BEAN.value, Space.SHIELD_BEAN.value, Space.DOUBLE_BEAN.value]
-SPECIAL_BEANS_ITERATOR = [Space.SPEED_BEAN.value, Space.MAGNET_BEAN.value, Space.SHIELD_BEAN.value, Space.DOUBLE_BEAN.value, Space.BONUS_BEAN.value]
-SKILL_BEANS_ITERATOR = [Space.SPEED_BEAN.value, Space.MAGNET_BEAN.value, Space.SHIELD_BEAN.value, Space.DOUBLE_BEAN.value]
+SPACE_CATEGORY = len(Space)  # Note: 0:wall 1:empty 2:regular bean 3:bonus bean 4:speed bean 5:magnet bean 6:shield bean 7:*2 bean 8:portal
+
+BEANS_ITERATOR = [
+    Space.REGULAR_BEAN.value,
+    Space.BONUS_BEAN.value,
+    Space.SPEED_BEAN.value,
+    Space.MAGNET_BEAN.value,
+    Space.SHIELD_BEAN.value,
+    Space.DOUBLE_BEAN.value,
+]
+SPECIAL_BEANS_ITERATOR = [
+    Space.SPEED_BEAN.value,
+    Space.MAGNET_BEAN.value,
+    Space.SHIELD_BEAN.value,
+    Space.DOUBLE_BEAN.value,
+    Space.BONUS_BEAN.value,
+]
+SKILL_BEANS_ITERATOR = [
+    Space.SPEED_BEAN.value,
+    Space.MAGNET_BEAN.value,
+    Space.SHIELD_BEAN.value,
+    Space.DOUBLE_BEAN.value,
+]
 
 # Event
 class Event(enum.Enum):
