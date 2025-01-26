@@ -106,7 +106,7 @@ class Pacman:
     def get_score(self):
         return self._score
 
-    def break_sheild(self):
+    def break_shield(self):
         if self._skill_status[Skill.SHIELD.value] > 0:
             self._skill_status[Skill.SHIELD.value] -= 1
             return False

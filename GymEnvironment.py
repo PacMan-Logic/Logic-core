@@ -207,20 +207,20 @@ class PacmanEnv(gym.Env):
         # 将“撞墙”坐标转换回原坐标
         caught = False
 
-        def find_last_possitive_coord(arr, idx):
+        def find_last_positive_coord(arr, idx):
             """功能函数：找到数组arr中从idx往前的最后一个正坐标"""
             for i in range(idx, -1, -1):
                 if arr[i][0] > 0:
                     return arr[i]
-            raise ValueError("No possitive item found")
+            raise ValueError("No positive item found")
 
         parsed_pacman_step_block = [
-            find_last_possitive_coord(self._pacman_step_block, i)
+            find_last_positive_coord(self._pacman_step_block, i)
             for i in range(len(self._pacman_step_block))
         ]
         parsed_ghosts_step_block = [
             [
-                find_last_possitive_coord(self._ghosts_step_block[j], i)
+                find_last_positive_coord(self._ghosts_step_block[j], i)
                 for i in range(len(self._ghosts_step_block[j]))
             ]
             for j in range(3)
@@ -277,11 +277,11 @@ class PacmanEnv(gym.Env):
                     break
         respwan = False
         if caught:
-            if not self._pacman.break_sheild():  # 有护盾保护
+            if not self._pacman.break_shield():  # 有护盾保护
                 ghosts_reward[ghost_num] += self._ghosts[ghost_num].update_score(DESTORY_PACMAN_SHIELD)
                 self.update_all_score()
                 self._pacman_continuous_alive = 0
-                self._event_list.append(Event.SHEILD_DESTROYED)
+                self._event_list.append(Event.SHIELD_DESTROYED)
             else:  # 没有护盾保护
                 respwan = True
                 pacman_reward += self._pacman.update_bonus(EATEN_BY_GHOST)
