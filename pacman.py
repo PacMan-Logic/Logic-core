@@ -5,7 +5,8 @@ from .utils import *
 class Pacman:
     def __init__(self):
         self._score = 0
-        self._skill_status = [0, 0, 0, 0]
+        self._skill_status_current = [0, 0, 0, 0, 0]
+        self._skill_status = [0, 0, 0, 0, 0]
         self._coord = np.array([-1, -1])
         self._level = 1
         self._board_size = 20
@@ -16,7 +17,7 @@ class Pacman:
         return points
 
     def update_score(self, points):
-        reward = 2 * points if self._skill_status[Skill.DOUBLE_SCORE.value] > 0 else points
+        reward = 2 * points if self._skill_status_current[Skill.DOUBLE_SCORE.value] > 0 else points
         self._score += reward
         return reward
 
@@ -54,7 +55,7 @@ class Pacman:
     def eat_bean(self, board):
         reward = 0
         x, y = self._coord
-        if self._skill_status[Skill.MAGNET.value] == 0:
+        if self._skill_status_current[Skill.MAGNET.value] == 0:
             reward += self.just_eat(board, x, y)
 
         else:
@@ -74,6 +75,9 @@ class Pacman:
             self._skill_status[skill_index.value] = DEFAULT_SKILL_TIME[
                 skill_index.value
             ]
+    
+    def update_current_skill(self):
+        self._skill_status_current = self._skill_status.copy()
 
     def set_level(self, level):
         self._level = level

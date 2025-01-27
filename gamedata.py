@@ -30,7 +30,7 @@ HUGE_BONUS_GAMMA = [0, 0.5, 0.7, 0.9]
 ROUND_BONUS_GAMMA = 0.43
 
 # Pacman skill
-DEFAULT_SKILL_TIME = [10, 10, 10]
+DEFAULT_SKILL_TIME = [10, 10, 10, 10, 10]
 
 
 class Skill(enum.Enum):
@@ -38,6 +38,7 @@ class Skill(enum.Enum):
     SPEED_UP = 1
     MAGNET = 2
     SHIELD = 3
+    FROZEN = 4
 
 SKILL_NUM = len(Skill)
 
