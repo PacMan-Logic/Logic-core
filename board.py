@@ -108,7 +108,7 @@ def boardgenerator():
                     board[i][j] = Space.DOUBLE_BEAN.value
                 elif number < 16:
                     board[i][j] = Space.FROZE_BEAN.value
-                elif number > 65: # fix：不能豆子全铺满
+                elif number > 65:
                     board[i][j] = Space.EMPTY.value
         
     

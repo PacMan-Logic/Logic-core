@@ -87,16 +87,17 @@ GHOST_HIT_OFFSET = -200
 class Space(enum.Enum):
     WALL = 0
     EMPTY = 1
-    REGULAR_BEAN = 2
-    BONUS_BEAN = 3
-    SPEED_BEAN = 4
-    MAGNET_BEAN = 5
-    SHIELD_BEAN = 6
-    DOUBLE_BEAN = 7
-    PORTAL = 8
-    FROZE_BEAN = 9
+    REGULAR_BEAN = 2  # 普通豆
+    BONUS_BEAN = 3  # 两分豆
+    SPEED_BEAN = 4  # 加速豆
+    MAGNET_BEAN = 5  # 磁铁豆
+    SHIELD_BEAN = 6  # 护盾豆
+    DOUBLE_BEAN = 7  # 双倍豆
+    FROZE_BEAN = 8  # 冰冻豆
+    PORTAL = 9 
 
-SPACE_CATEGORY = len(Space)  # Note: 0:wall 1:empty 2:regular bean 3:bonus bean 4:speed bean 5:magnet bean 6:shield bean 7:*2 bean 8:portal 9: frozen bean
+
+SPACE_CATEGORY = len(Space)
 
 BEANS_ITERATOR = [
     Space.REGULAR_BEAN.value,
