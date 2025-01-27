@@ -49,6 +49,10 @@ class Pacman:
         elif board[x][y] == Space.DOUBLE_BEAN.value:
             board[x][y] = Space.EMPTY.value
             self.acquire_skill(Skill.DOUBLE_SCORE)
+            
+        elif board[x][y] == Space.FROZE_BEAN.value:
+            board[x][y] = Space.EMPTY.value
+            self.acquire_skill(Skill.FROZE)
 
         return reward
 
@@ -108,8 +112,8 @@ class Pacman:
     def get_score(self):
         return self._score
 
-    def break_shield(self):
-        if self._skill_status[Skill.SHIELD.value] > 0:
+    def try_break_shield(self):
+        if self._skill_status_current[Skill.SHIELD.value] > 0:
             self._skill_status[Skill.SHIELD.value] -= 1
             return False
         else:

@@ -284,7 +284,7 @@ class PacmanEnv(gym.Env):
                     break
         respwan = False
         if caught:
-            if not self._pacman.break_shield():  # 有护盾保护
+            if not self._pacman.try_break_shield():  # 有护盾保护
                 ghosts_reward[ghost_num] += self._ghosts[ghost_num].update_score(DESTORY_PACMAN_SHIELD)
                 self.update_all_score()
                 self._pacman_continuous_alive = 0
