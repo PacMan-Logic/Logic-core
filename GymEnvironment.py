@@ -75,6 +75,8 @@ class PacmanEnv(gym.Env):
                         print("\033[1;48;5;208m  \033[0m", end="")  # *2豆子：深橙色
                     elif self._board[i][j] == Space.PORTAL.value:
                         print("\033[1;48;5;93m  \033[0m", end="")  # 传送门：深紫色
+                    elif self._board[i][j] == Space.FROZEN_BEAN.value:
+                        print("\033[1;48;5;118m  \033[0m", end="")  # 冻结豆子：亮绿色
                 print()
         elif mode == "logic":  # 通信模式
             return_dict = {
