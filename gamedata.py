@@ -75,10 +75,12 @@ class Update(enum.Enum):
 OPERATION_NUM = len(Direction)  # 操作数（上下左右不动）
 
 # Board
-INITIAL_BOARD_SIZE = [0, 38, 29, 20]
+PASSAGE_WIDTH = 2
+INITIAL_BOARD_SIZE = [0, 38 + 2*(PASSAGE_WIDTH - 1) + 1, 29 + 2*(PASSAGE_WIDTH - 1) + 1, 20 + 2*(PASSAGE_WIDTH - 1)]
 
 PACMAN_HIT_OFFSET = -100
 GHOST_HIT_OFFSET = -200
+
 
 
 class Space(enum.Enum):
@@ -91,8 +93,9 @@ class Space(enum.Enum):
     SHIELD_BEAN = 6
     DOUBLE_BEAN = 7
     PORTAL = 8
+    FROZEN_BEAN = 9
 
-SPACE_CATEGORY = len(Space)  # Note: 0:wall 1:empty 2:regular bean 3:bonus bean 4:speed bean 5:magnet bean 6:shield bean 7:*2 bean 8:portal
+SPACE_CATEGORY = len(Space)  # Note: 0:wall 1:empty 2:regular bean 3:bonus bean 4:speed bean 5:magnet bean 6:shield bean 7:*2 bean 8:portal 9: frozen bean
 
 BEANS_ITERATOR = [
     Space.REGULAR_BEAN.value,
@@ -101,6 +104,7 @@ BEANS_ITERATOR = [
     Space.MAGNET_BEAN.value,
     Space.SHIELD_BEAN.value,
     Space.DOUBLE_BEAN.value,
+    Space.FROZEN_BEAN.value,
 ]
 SPECIAL_BEANS_ITERATOR = [
     Space.SPEED_BEAN.value,
@@ -108,12 +112,14 @@ SPECIAL_BEANS_ITERATOR = [
     Space.SHIELD_BEAN.value,
     Space.DOUBLE_BEAN.value,
     Space.BONUS_BEAN.value,
+    Space.FROZEN_BEAN.value,
 ]
 SKILL_BEANS_ITERATOR = [
     Space.SPEED_BEAN.value,
     Space.MAGNET_BEAN.value,
     Space.SHIELD_BEAN.value,
     Space.DOUBLE_BEAN.value,
+    Space.FROZEN_BEAN.value,
 ]
 
 # Event
