@@ -75,7 +75,7 @@ class PacmanEnv(gym.Env):
                         print("\033[1;48;5;208m  \033[0m", end="")  # *2豆子：深橙色
                     elif self._board[i][j] == Space.PORTAL.value:
                         print("\033[1;48;5;93m  \033[0m", end="")  # 传送门：深紫色
-                    elif self._board[i][j] == Space.FROZEN_BEAN.value:
+                    elif self._board[i][j] == Space.FROZE_BEAN.value:
                         print("\033[1;48;5;118m  \033[0m", end="")  # 冻结豆子：亮绿色
                 print()
         elif mode == "logic":  # 通信模式
@@ -180,6 +180,11 @@ class PacmanEnv(gym.Env):
         self._last_skill_status = self._pacman.get_skills_status()
         pacman_reward = 0
         ghosts_reward = [0,0,0]
+        
+        # 若冰冻技能存在，将幽灵操作冻结
+        if self._last_skill_status[Skill.FROZE.value] > 0:
+            ghost_actions = [Direction.STAY] * 3
+            self._pacman.decrease_skill_time([Skill.FROZE])
 
         self._pacman_step_block.append(self._pacman.get_coord().tolist())
         for i in range(3):
@@ -252,7 +257,7 @@ class PacmanEnv(gym.Env):
                 )
 
         # 技能时间更新
-        self._pacman.diminish_skill_time()
+        self._pacman.decrease_skill_time()
         
         pacman_reward += self._pacman.eat_bean(self._board)
         self.update_all_score()

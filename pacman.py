@@ -16,7 +16,9 @@ class Pacman:
         return points
 
     def update_score(self, points):
-        reward = 2 * points if self._skill_status[Skill.DOUBLE_SCORE.value] > 0 else points
+        reward = (
+            2 * points if self._skill_status[Skill.DOUBLE_SCORE.value] > 0 else points
+        )
         self._score += reward
         return reward
 
@@ -93,15 +95,13 @@ class Pacman:
     def get_portal_coord(self):
         return self._portal_coord.copy()
 
-    def diminish_skill_time(
+    def decrease_skill_time(
         self,
+        skill_list: list[Skill] = [Skill.DOUBLE_SCORE, Skill.MAGNET, Skill.SPEED_UP],
     ):  # Note: reset the skill status when a new round starts
-        if self._skill_status[Skill.DOUBLE_SCORE.value] > 0:
-            self._skill_status[Skill.DOUBLE_SCORE.value] -= 1
-        if self._skill_status[Skill.MAGNET.value] > 0:
-            self._skill_status[Skill.MAGNET.value] -= 1
-        if self._skill_status[Skill.SPEED_UP.value] > 0:
-            self._skill_status[Skill.SPEED_UP.value] -= 1
+        for skill in skill_list:
+            if self._skill_status[skill.value] > 0:
+                self._skill_status[skill.value] -= 1
 
     def get_score(self):
         return self._score

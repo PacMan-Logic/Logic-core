@@ -38,6 +38,7 @@ class Skill(enum.Enum):
     SPEED_UP = 1
     MAGNET = 2
     SHIELD = 3
+    FROZE = 4
 
 SKILL_NUM = len(Skill)
 
@@ -93,7 +94,7 @@ class Space(enum.Enum):
     SHIELD_BEAN = 6
     DOUBLE_BEAN = 7
     PORTAL = 8
-    FROZEN_BEAN = 9
+    FROZE_BEAN = 9
 
 SPACE_CATEGORY = len(Space)  # Note: 0:wall 1:empty 2:regular bean 3:bonus bean 4:speed bean 5:magnet bean 6:shield bean 7:*2 bean 8:portal 9: frozen bean
 
@@ -104,7 +105,7 @@ BEANS_ITERATOR = [
     Space.MAGNET_BEAN.value,
     Space.SHIELD_BEAN.value,
     Space.DOUBLE_BEAN.value,
-    Space.FROZEN_BEAN.value,
+    Space.FROZE_BEAN.value,
 ]
 SPECIAL_BEANS_ITERATOR = [
     Space.SPEED_BEAN.value,
@@ -112,14 +113,14 @@ SPECIAL_BEANS_ITERATOR = [
     Space.SHIELD_BEAN.value,
     Space.DOUBLE_BEAN.value,
     Space.BONUS_BEAN.value,
-    Space.FROZEN_BEAN.value,
+    Space.FROZE_BEAN.value,
 ]
 SKILL_BEANS_ITERATOR = [
     Space.SPEED_BEAN.value,
     Space.MAGNET_BEAN.value,
     Space.SHIELD_BEAN.value,
     Space.DOUBLE_BEAN.value,
-    Space.FROZEN_BEAN.value,
+    Space.FROZE_BEAN.value,
 ]
 
 # Event
