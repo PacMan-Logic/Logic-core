@@ -317,6 +317,8 @@ class PacmanEnv(gym.Env):
                 self.update_all_score()
                 self._pacman_continuous_alive = 0
 
+        self._pacman.update_current_skill()
+        
         if self._portal_available and not respwan:  # 传送门开启且吃豆人未被吃掉
             if self._portal_coord.tolist() in self._pacman_step_block:
                 eaten_all_beans = False
