@@ -129,3 +129,4 @@ class Pacman:
 
     def clear_skills(self):
         self._skill_status = [0, 0, 0, 0, 0]
+        self._skill_status_current = [0, 0, 0, 0, 0]

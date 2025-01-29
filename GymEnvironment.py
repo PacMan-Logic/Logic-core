@@ -134,6 +134,7 @@ class PacmanEnv(gym.Env):
         self._pacman.set_coord(np.array(coords[0]))
         self._pacman.set_level(self._level)
         self._pacman.set_size(self._size)
+        self._pacman.clear_skills() 
         for i in range(3):
             self._ghosts[i].set_coord(np.array(coords[i + 1]))
 
@@ -157,6 +158,7 @@ class PacmanEnv(gym.Env):
         for i in range(3):
             self._ghosts[i].set_coord(np.array(reset_dict["ghosts_coord"][i]))
         self._pacman.set_coord(np.array(reset_dict["pacman_coord"]))
+        self._pacman.clear_skills()
         self._ghosts_score = reset_dict["score"][1]
         self._pacman_score = reset_dict["score"][0]
         self._board = np.array(reset_dict["board"])
