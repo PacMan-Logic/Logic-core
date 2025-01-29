@@ -180,6 +180,9 @@ class PacmanEnv(gym.Env):
         self._last_skill_status = self._pacman.get_skills_status()
         pacman_reward = 0
         ghosts_reward = [0,0,0]
+
+        # 技能时间更新
+        self._pacman.decrease_skill_time()
         
         # 若冰冻技能存在，将幽灵操作冻结
         if self._last_skill_status[Skill.FROZE.value] > 0:
@@ -255,9 +258,6 @@ class PacmanEnv(gym.Env):
                 parsed_ghosts_step_block[i] = from2to3(
                     parsed_ghosts_step_block[i][0], parsed_ghosts_step_block[i][1]
                 )
-
-        # 技能时间更新
-        self._pacman.decrease_skill_time()
         
         pacman_reward += self._pacman.eat_bean(self._board)
         self.update_all_score()
