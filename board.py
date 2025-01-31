@@ -49,7 +49,7 @@ def final_boardgenerator(actual_size, level):
             iter += 1
     
     if level == 3:
-        while iter < 6:
+        while iter < 4:
             x = random.randint(1, size - 2)
             y = random.randint(1, size - 2)
             if final_board[x][y] == Space.EMPTY.value or final_board[x][y] == Space.REGULAR_BEAN.value:
