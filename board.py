@@ -100,15 +100,15 @@ def boardgenerator():
                 number = random.randint(0, 100)
                 if number < 5:
                     board[i][j] = Space.BONUS_BEAN.value
-                elif number < 8:# fix: 加速豆比例上升
+                elif number < 7:# fix: 加速豆比例上升
                     board[i][j] = Space.SPEED_BEAN.value
-                elif number < 11:# fix：磁铁比例上升
+                elif number < 10:# fix：磁铁比例上升
                     board[i][j] = Space.MAGNET_BEAN.value
-                elif number < 15:
+                elif number < 13:
                     board[i][j] = Space.DOUBLE_BEAN.value
-                elif number < 16:
+                elif number < 14:
                     board[i][j] = Space.FROZE_BEAN.value
-                elif number > 65:
+                elif number > 62:
                     board[i][j] = Space.EMPTY.value
         
     
