@@ -33,7 +33,7 @@ class PacmanEnv(gym.Env):
         self._eaten_time = 0
         self._portal_available = False
         self._beannumber = 0
-        self._ghosts_step_block = np.empty((3, 0, 2), dtype=int)
+        self._ghosts_step_block = [np.empty((0, 2), dtype=int) for _ in range(3)]
         self._pacman_step_block = np.empty((0, 2), dtype=int)
         self._pacman_score = 0
         self._ghosts_score = 0
@@ -85,7 +85,7 @@ class PacmanEnv(gym.Env):
                 "pacman_step_block": self._pacman_step_block.tolist(),
                 "pacman_coord": self._pacman.get_coord().tolist(),
                 "pacman_skills": self._last_skill_status,
-                "ghosts_step_block": self._ghosts_step_block.tolist(),
+                "ghosts_step_block": [ghost_step_block.tolist() for ghost_step_block in self._ghosts_step_block],
                 "ghosts_coord": [ghost.get_coord().tolist() for ghost in self._ghosts],
                 "score": [self._pacman_score, self._ghosts_score],
                 "events": [i.value for i in self._event_list],
@@ -177,7 +177,7 @@ class PacmanEnv(gym.Env):
         self._event_list = []
         pacman_action = Direction(pacmanAction)
         ghost_actions = [Direction(action) for action in ghostAction]
-        self._ghosts_step_block = np.empty((3, 0, 2), dtype=int)
+        self._ghosts_step_block = [np.empty((0, 2), dtype=int) for _ in range(3)]
         self._pacman_step_block = np.empty((0, 2), dtype=int)
         self._last_skill_status = self._pacman.get_skills_status()
         pacman_reward = 0
@@ -233,13 +233,13 @@ class PacmanEnv(gym.Env):
             for i in range(len(self._pacman_step_block))
         ])
 
-        parsed_ghosts_step_block = np.array([
+        parsed_ghosts_step_block = [
             np.array([
                 find_last_positive_coord(self._ghosts_step_block[j], i)
                 for i in range(len(self._ghosts_step_block[j]))
             ])
             for j in range(3)
-        ])
+        ]
 
         # 统一长度
         def from2to3(start, end):
