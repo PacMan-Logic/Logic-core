@@ -322,7 +322,7 @@ class PacmanEnv(gym.Env):
         self._pacman.update_current_skill()
         
         if self._portal_available and not respwan:  # 传送门开启且吃豆人未被吃掉
-            if self._portal_coord.tolist() in self._pacman_step_block:
+            if np.any(np.all(self._pacman_step_block == self._portal_coord, axis=1)):
                 eaten_all_beans = False
                 if count_remain_beans == 0:
                     eaten_all_beans = True
