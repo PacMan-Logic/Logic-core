@@ -33,8 +33,8 @@ class PacmanEnv(gym.Env):
         self._eaten_time = 0
         self._portal_available = False
         self._beannumber = 0
-        self._pacman_step_block = []
-        self._ghosts_step_block = [[], [], []]
+        self._ghosts_step_block = np.empty((3, 0, 2), dtype=int)
+        self._pacman_step_block = np.empty((0, 2), dtype=int)
         self._pacman_score = 0
         self._ghosts_score = 0
         self._portal_coord = np.array([-1, -1])
@@ -82,10 +82,10 @@ class PacmanEnv(gym.Env):
             return_dict = {
                 "round": self._round,
                 "level": self._level,
-                "pacman_step_block": self._pacman_step_block,
+                "pacman_step_block": self._pacman_step_block.tolist(),
                 "pacman_coord": self._pacman.get_coord().tolist(),
                 "pacman_skills": self._last_skill_status,
-                "ghosts_step_block": self._ghosts_step_block,
+                "ghosts_step_block": self._ghosts_step_block.tolist(),
                 "ghosts_coord": [ghost.get_coord().tolist() for ghost in self._ghosts],
                 "score": [self._pacman_score, self._ghosts_score],
                 "events": [i.value for i in self._event_list],
@@ -177,8 +177,8 @@ class PacmanEnv(gym.Env):
         self._event_list = []
         pacman_action = Direction(pacmanAction)
         ghost_actions = [Direction(action) for action in ghostAction]
-        self._ghosts_step_block = [[], [], []]
-        self._pacman_step_block = []
+        self._ghosts_step_block = np.empty((3, 0, 2), dtype=int)
+        self._pacman_step_block = np.empty((0, 2), dtype=int)
         self._last_skill_status = self._pacman.get_skills_status()
         pacman_reward = 0
         ghosts_reward = [0,0,0]
@@ -191,9 +191,10 @@ class PacmanEnv(gym.Env):
             ghost_actions = [Direction.STAY] * 3
             self._pacman.decrease_skill_time([Skill.FROZE])
 
-        self._pacman_step_block.append(self._pacman.get_coord().tolist())
+        self._pacman_step_block = np.vstack((self._pacman_step_block, np.array(self._pacman.get_coord())))
+
         for i in range(3):
-            self._ghosts_step_block[i].append(self._ghosts[i].get_coord().tolist())
+            self._ghosts_step_block[i] = np.vstack((self._ghosts_step_block[i], np.array(self._ghosts[i].get_coord())))
 
         # 吃豆人移动
         for _ in range(1 if self._last_skill_status[Skill.SPEED_UP.value] == 0 else 2):
@@ -202,7 +203,7 @@ class PacmanEnv(gym.Env):
             success = self._pacman.try_move(self._board, pacman_action)
             if not success:
                 appendix += PACMAN_HIT_OFFSET
-            self._pacman_step_block.append(appendix.tolist())
+            self._pacman_step_block = np.vstack((self._pacman_step_block, appendix))
         self.update_all_score()
         # 幽灵移动
         for i in range(len(self._ghosts)):
@@ -212,7 +213,7 @@ class PacmanEnv(gym.Env):
             success = self._ghosts[i].try_move(self._board, ghost_actions[i])
             if not success:
                 appendix += GHOST_HIT_OFFSET
-            self._ghosts_step_block[i].append(appendix.tolist())
+            self._ghosts_step_block[i] = np.vstack((self._ghosts_step_block[i], appendix))
         self.update_all_score()
 
         # 预处理吃豆人和幽灵经过的路径，便于后续判断
@@ -220,35 +221,34 @@ class PacmanEnv(gym.Env):
         caught = False
 
         def find_last_positive_coord(arr, idx):
-            """功能函数：找到数组arr中从idx往前的最后一个正坐标"""
-            for i in range(idx, -1, -1):
-                if arr[i][0] > 0:
-                    return arr[i]
+            """找到数组 arr 中从 idx 往前的最后一个正坐标"""
+            arr_slice = arr[:idx+1]
+            mask = arr_slice[:, 0] > 0
+            if np.any(mask):  
+                return arr_slice[mask][-1]
             raise ValueError("No positive item found")
 
-        parsed_pacman_step_block = [
+        parsed_pacman_step_block = np.array([
             find_last_positive_coord(self._pacman_step_block, i)
             for i in range(len(self._pacman_step_block))
-        ]
-        parsed_ghosts_step_block = [
-            [
+        ])
+
+        parsed_ghosts_step_block = np.array([
+            np.array([
                 find_last_positive_coord(self._ghosts_step_block[j], i)
                 for i in range(len(self._ghosts_step_block[j]))
-            ]
+            ])
             for j in range(3)
-        ]
+        ])
 
         # 统一长度
         def from2to3(start, end):
-            """功能函数：将长度为2的路径取中点转换为长度为3的路径"""
-            return [
+            """将长度为 2 的路径取中点转换为长度为 3"""
+            return np.array([
                 start,
-                [
-                    (start[0] + end[0]) / 2,
-                    (start[1] + end[1]) / 2,
-                ],
-                end,
-            ]
+                (start + end) / 2,
+                end
+            ])
 
         if len(parsed_pacman_step_block) == 2:
             parsed_pacman_step_block = from2to3(
