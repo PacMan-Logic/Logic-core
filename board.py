@@ -62,7 +62,7 @@ def final_boardgenerator(actual_size, level):
     t = 0
     for i in range(actual_size):
         for j in range(actual_size):
-            if final_board[i][j] == Space.REGULAR_BEAN.value or final_board[i][j] == Space.BONUS_BEAN.value or final_board[i][j] == Space.SPEED_BEAN.value or final_board[i][j] == Space.MAGNET_BEAN.value or final_board[i][j] == Space.SHIELD_BEAN.value or final_board[i][j] == Space.DOUBLE_BEAN.value:
+            if final_board[i][j] == Space.REGULAR_BEAN.value or final_board[i][j] == Space.BONUS_BEAN.value:
                 t += 1
                 
     # fix: no beans at corners(pacman and ghosts places)
