@@ -85,7 +85,10 @@ class PacmanEnv(gym.Env):
                 "pacman_step_block": self._pacman_step_block.tolist(),
                 "pacman_coord": self._pacman.get_coord().tolist(),
                 "pacman_skills": self._last_skill_status,
-                "ghosts_step_block": [ghost_step_block.tolist() for ghost_step_block in self._ghosts_step_block],
+                "ghosts_step_block": [
+                    ghost_step_block.tolist()
+                    for ghost_step_block in self._ghosts_step_block
+                ],
                 "ghosts_coord": [ghost.get_coord().tolist() for ghost in self._ghosts],
                 "score": [self._pacman_score, self._ghosts_score],
                 "events": [i.value for i in self._event_list],
@@ -134,7 +137,7 @@ class PacmanEnv(gym.Env):
         self._pacman.set_coord(np.array(coords[0]))
         self._pacman.set_level(self._level)
         self._pacman.set_size(self._size)
-        self._pacman.clear_skills() 
+        self._pacman.clear_skills()
         for i in range(3):
             self._ghosts[i].set_coord(np.array(coords[i + 1]))
 
@@ -171,7 +174,7 @@ class PacmanEnv(gym.Env):
         self._pacman_score = self.get_pacman_score()
         self._ghosts_score = self.get_ghosts_score()
 
-    def step(self, pacmanAction: int, ghostAction: List[int]) :
+    def step(self, pacmanAction: int, ghostAction: List[int]):
         """主逻辑：根据玩家的操作，更新游戏状态，返回(局面信息,吃豆人reward,幽灵reward,当前关卡是否结束,是否吃完所有的豆子)"""
         self._round += 1
         self._event_list = []
@@ -181,20 +184,24 @@ class PacmanEnv(gym.Env):
         self._pacman_step_block = np.empty((0, 2), dtype=int)
         self._last_skill_status = self._pacman.get_skills_status()
         pacman_reward = 0
-        ghosts_reward = [0,0,0]
+        ghosts_reward = [0, 0, 0]
 
         # 技能时间更新
         self._pacman.decrease_skill_time()
-        
+
         # 若冰冻技能存在，将幽灵操作冻结
         if self._last_skill_status[Skill.FROZE.value] > 0:
             ghost_actions = [Direction.STAY] * 3
             self._pacman.decrease_skill_time([Skill.FROZE])
 
-        self._pacman_step_block = np.vstack((self._pacman_step_block, np.array(self._pacman.get_coord())))
+        self._pacman_step_block = np.vstack(
+            (self._pacman_step_block, np.array(self._pacman.get_coord()))
+        )
 
         for i in range(3):
-            self._ghosts_step_block[i] = np.vstack((self._ghosts_step_block[i], np.array(self._ghosts[i].get_coord())))
+            self._ghosts_step_block[i] = np.vstack(
+                (self._ghosts_step_block[i], np.array(self._ghosts[i].get_coord()))
+            )
 
         # 吃豆人移动
         for _ in range(1 if self._last_skill_status[Skill.SPEED_UP.value] == 0 else 2):
@@ -213,7 +220,9 @@ class PacmanEnv(gym.Env):
             success = self._ghosts[i].try_move(self._board, ghost_actions[i])
             if not success:
                 appendix += GHOST_HIT_OFFSET
-            self._ghosts_step_block[i] = np.vstack((self._ghosts_step_block[i], appendix))
+            self._ghosts_step_block[i] = np.vstack(
+                (self._ghosts_step_block[i], appendix)
+            )
         self.update_all_score()
 
         # 预处理吃豆人和幽灵经过的路径，便于后续判断
@@ -222,33 +231,33 @@ class PacmanEnv(gym.Env):
 
         def find_last_positive_coord(arr, idx):
             """找到数组 arr 中从 idx 往前的最后一个正坐标"""
-            arr_slice = arr[:idx+1]
+            arr_slice = arr[: idx + 1]
             mask = arr_slice[:, 0] > 0
-            if np.any(mask):  
+            if np.any(mask):
                 return arr_slice[mask][-1]
             raise ValueError("No positive item found")
 
-        parsed_pacman_step_block = np.array([
-            find_last_positive_coord(self._pacman_step_block, i)
-            for i in range(len(self._pacman_step_block))
-        ])
+        parsed_pacman_step_block = np.array(
+            [
+                find_last_positive_coord(self._pacman_step_block, i)
+                for i in range(len(self._pacman_step_block))
+            ]
+        )
 
         parsed_ghosts_step_block = [
-            np.array([
-                find_last_positive_coord(self._ghosts_step_block[j], i)
-                for i in range(len(self._ghosts_step_block[j]))
-            ])
+            np.array(
+                [
+                    find_last_positive_coord(self._ghosts_step_block[j], i)
+                    for i in range(len(self._ghosts_step_block[j]))
+                ]
+            )
             for j in range(3)
         ]
 
         # 统一长度
         def from2to3(start, end):
             """将长度为 2 的路径取中点转换为长度为 3"""
-            return np.array([
-                start,
-                (start + end) / 2,
-                end
-            ])
+            return np.array([start, (start + end) / 2, end])
 
         if len(parsed_pacman_step_block) == 2:
             parsed_pacman_step_block = from2to3(
@@ -260,7 +269,7 @@ class PacmanEnv(gym.Env):
                 parsed_ghosts_step_block[i] = from2to3(
                     parsed_ghosts_step_block[i][0], parsed_ghosts_step_block[i][1]
                 )
-        
+
         pacman_reward += self._pacman.eat_bean(self._board)
         self.update_all_score()
 
@@ -285,16 +294,20 @@ class PacmanEnv(gym.Env):
                     ghost_num = j
                     break
         respwan = False
-        if caught:
+        if caught and not self._pacman.invulnerable():
             if not self._pacman.try_break_shield():  # 有护盾保护
-                ghosts_reward[ghost_num] += self._ghosts[ghost_num].update_score(DESTORY_PACMAN_SHIELD)
+                ghosts_reward[ghost_num] += self._ghosts[ghost_num].update_score(
+                    DESTORY_PACMAN_SHIELD
+                )
                 self.update_all_score()
                 self._pacman_continuous_alive = 0
                 self._event_list.append(Event.SHIELD_DESTROYED)
             else:  # 没有护盾保护
                 respwan = True
                 pacman_reward += self._pacman.update_bonus(EATEN_BY_GHOST)
-                ghosts_reward[ghost_num] += self._ghosts[ghost_num].update_score(EAT_PACMAN)
+                ghosts_reward[ghost_num] += self._ghosts[ghost_num].update_score(
+                    EAT_PACMAN
+                )
                 self.update_all_score()
                 self._eaten_time += 1
                 self._pacman_continuous_alive = 0
@@ -311,6 +324,8 @@ class PacmanEnv(gym.Env):
                 self.update_all_score()
                 self._eaten_time = 0
         else:
+            if self._pacman.invulnerable():  # 无敌状态结束
+                self._pacman.set_invulnerable(0)
             self._pacman_continuous_alive += 1
             if (
                 self._pacman_continuous_alive >= PACMAN_HUGE_BONUS_THRESHOLD
@@ -320,7 +335,7 @@ class PacmanEnv(gym.Env):
                 self._pacman_continuous_alive = 0
 
         self._pacman.update_current_skill()
-        
+
         if self._portal_available and not respwan:  # 传送门开启且吃豆人未被吃掉
             if np.any(np.all(self._pacman_step_block == self._portal_coord, axis=1)):
                 eaten_all_beans = False
@@ -336,7 +351,13 @@ class PacmanEnv(gym.Env):
                 self._event_list.append(Event.FINISH_LEVEL)
                 self._pacman_continuous_alive = 0
                 self._eaten_time = 0
-                return (self.get_return_dict(), pacman_reward, ghosts_reward, True, eaten_all_beans)
+                return (
+                    self.get_return_dict(),
+                    pacman_reward,
+                    ghosts_reward,
+                    True,
+                    eaten_all_beans,
+                )
 
         if (
             self._level != MAX_LEVEL and self._round >= PORTAL_AVAILABLE[self._level]
@@ -359,7 +380,9 @@ class PacmanEnv(gym.Env):
         # 超时
         if self._round >= MAX_ROUND[self._level]:
             for i in range(3):
-                ghosts_reward[i] += self._ghosts[i].update_score(PREVENT_PACMAN_EAT_ALL_BEANS)
+                ghosts_reward[i] += self._ghosts[i].update_score(
+                    PREVENT_PACMAN_EAT_ALL_BEANS
+                )
             self.update_all_score()
             self._pacman.clear_skills()
             self._event_list.append(Event.TIMEOUT)
@@ -391,8 +414,8 @@ class PacmanEnv(gym.Env):
         for i in range(self._size):
             for j in range(self._size):
                 if self._board[i][j] == Space.EMPTY.value:
-                    min_distance = float("inf") 
-                    for ghost in self._ghosts: 
+                    min_distance = float("inf")
+                    for ghost in self._ghosts:
                         ghost_x, ghost_y = ghost.get_coord()
                         dist = abs(ghost_x - i) + abs(ghost_y - j)
                         min_distance = min(min_distance, dist)

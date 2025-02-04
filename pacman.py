@@ -11,13 +11,24 @@ class Pacman:
         self._level = 1
         self._board_size = 20
         self._portal_coord = np.array([-1, -1])
+        self._invulnerable_time = 0
+
+    def invulnerable(self):
+        return self._invulnerable_time > 0
+
+    def set_invulnerable(self, time=1):
+        self._invulnerable_time = time
 
     def update_bonus(self, points):
         self._score += points
         return points
 
     def update_score(self, points):
-        reward = 2 * points if self._skill_status_current[Skill.DOUBLE_SCORE.value] > 0 else points
+        reward = (
+            2 * points
+            if self._skill_status_current[Skill.DOUBLE_SCORE.value] > 0
+            else points
+        )
         self._score += reward
         return reward
 
@@ -49,7 +60,7 @@ class Pacman:
         elif board[x][y] == Space.DOUBLE_BEAN.value:
             board[x][y] = Space.EMPTY.value
             self.acquire_skill(Skill.DOUBLE_SCORE)
-            
+
         elif board[x][y] == Space.FROZE_BEAN.value:
             board[x][y] = Space.EMPTY.value
             self.acquire_skill(Skill.FROZE)
@@ -79,7 +90,7 @@ class Pacman:
             self._skill_status[skill_index.value] = DEFAULT_SKILL_TIME[
                 skill_index.value
             ]
-    
+
     def update_current_skill(self):
         self._skill_status_current = self._skill_status.copy()
 
@@ -113,6 +124,7 @@ class Pacman:
         return self._score
 
     def try_break_shield(self):
+        self.set_invulnerable()  # 破盾或被吃掉后有一轮的无敌状态
         if self._skill_status_current[Skill.SHIELD.value] > 0:
             self._skill_status[Skill.SHIELD.value] -= 1
             return False
