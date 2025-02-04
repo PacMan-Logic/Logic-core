@@ -92,22 +92,22 @@ def boardgenerator():
                 board = opposite_c_wall_generator(board, (size - 4) // 2, i + ((size - 4) // 4) - 1 + offset, j + ((size - 4) // 4) - 1 + offset)
 	
             
-	# 生成不同种类的豆子fix:降低护盾数，每一关3个
+	# 生成不同种类的豆子
     for i in range(1, size - 2 + (2 * offset)):
         for j in range(1, size - 2 + (2 * offset)):
             if board[i][j] == Space.REGULAR_BEAN.value:
-                number = random.randint(0, 100)
-                if number < 5:
+                number = random.randint(0, 1000)
+                if number < 50:
                     board[i][j] = Space.BONUS_BEAN.value
-                elif number < 7:# fix: 加速豆比例上升
+                elif number < 65:
                     board[i][j] = Space.SPEED_BEAN.value
-                elif number < 10:# fix：磁铁比例上升
+                elif number < 90:
                     board[i][j] = Space.MAGNET_BEAN.value
-                elif number < 13:
+                elif number < 120:
                     board[i][j] = Space.DOUBLE_BEAN.value
-                elif number < 14:
+                elif number < 130:
                     board[i][j] = Space.FROZE_BEAN.value
-                elif number > 62:
+                elif number > 620:
                     board[i][j] = Space.EMPTY.value
         
     

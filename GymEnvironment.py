@@ -292,6 +292,7 @@ class PacmanEnv(gym.Env):
         respwan = False
         if caught and not self._pacman.invulnerable():
             if not self._pacman.try_break_shield():  # 有护盾保护
+                self._pacman.set_invulnerable_time(1) # 破盾后有一轮的无敌状态
                 ghosts_reward[ghost_num] += self._ghosts[ghost_num].update_score(
                     DESTORY_PACMAN_SHIELD
                 )
@@ -299,6 +300,7 @@ class PacmanEnv(gym.Env):
                 self._pacman_continuous_alive = 0
                 self._event_list.append(Event.SHIELD_DESTROYED)
             else:  # 没有护盾保护
+                self._pacman.set_invulnerable_time(3) # 被吃掉后有三轮的无敌状态
                 respwan = True
                 pacman_reward += self._pacman.update_bonus(EATEN_BY_GHOST)
                 ghosts_reward[ghost_num] += self._ghosts[ghost_num].update_score(
@@ -320,8 +322,8 @@ class PacmanEnv(gym.Env):
                 self.update_all_score()
                 self._eaten_time = 0
         else:
-            if self._pacman.invulnerable():  # 无敌状态结束
-                self._pacman.set_invulnerable(0)
+            if self._pacman.invulnerable(): 
+                self._pacman.decrease_invulnerable_time()
             self._pacman_continuous_alive += 1
             if (
                 self._pacman_continuous_alive >= PACMAN_HUGE_BONUS_THRESHOLD

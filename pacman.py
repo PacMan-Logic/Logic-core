@@ -17,8 +17,11 @@ class Pacman:
     def invulnerable(self):
         return self._invulnerable_time > 0
 
-    def set_invulnerable(self, time=1):
+    def set_invulnerable_time(self, time=1):
         self._invulnerable_time = time
+        
+    def decrease_invulnerable_time(self):
+        self._invulnerable_time -= 1
 
     def update_bonus(self, points):
         self._score += points
@@ -127,7 +130,6 @@ class Pacman:
         return self._score
 
     def try_break_shield(self):
-        self.set_invulnerable()  # 破盾或被吃掉后有一轮的无敌状态
         if self._skill_status_current[Skill.SHIELD.value] > 0:
             self._skill_status[Skill.SHIELD.value] -= 1
             return False
