@@ -12,6 +12,7 @@ class Pacman:
         self._board_size = 20
         self._portal_coord = np.array([-1, -1])
         self._invulnerable_time = 0
+        self._eaten_bean_count = 0
 
     def invulnerable(self):
         return self._invulnerable_time > 0
@@ -39,10 +40,12 @@ class Pacman:
 
         if board[x][y] == Space.REGULAR_BEAN.value:
             board[x][y] = Space.EMPTY.value
+            self._eaten_bean_count += 1
             reward += self.update_score(1)
 
         elif board[x][y] == Space.BONUS_BEAN.value:
             board[x][y] = Space.EMPTY.value
+            self._eaten_bean_count += 1
             reward += self.update_score(2)
 
         elif board[x][y] == Space.SPEED_BEAN.value:
@@ -142,3 +145,9 @@ class Pacman:
     def clear_skills(self):
         self._skill_status = [0, 0, 0, 0, 0]
         self._skill_status_current = [0, 0, 0, 0, 0]
+        
+    def reset_eaten_bean_count(self):
+        self._eaten_bean_count = 0
+
+    def get_eaten_bean_count(self):
+        return self._eaten_bean_count

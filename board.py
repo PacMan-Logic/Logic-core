@@ -2,7 +2,6 @@ import numpy as np
 import random
 from .gamedata import *
 
-# 宽度：放到宏里
 def final_boardgenerator(actual_size, level):
     offset = PASSAGE_WIDTH - 1
     size = 20

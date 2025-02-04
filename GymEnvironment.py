@@ -32,7 +32,7 @@ class PacmanEnv(gym.Env):
         self._pacman_continuous_alive = 0
         self._eaten_time = 0
         self._portal_available = False
-        self._beannumber = 0
+        self._init_bean_count = 0
         self._ghosts_step_block = [np.empty((0, 2), dtype=int) for _ in range(3)]
         self._pacman_step_block = np.empty((0, 2), dtype=int)
         self._pacman_score = 0
@@ -107,7 +107,7 @@ class PacmanEnv(gym.Env):
             "pacman_coord": self._pacman.get_coord(),
             "ghosts_coord": [ghost.get_coord() for ghost in self._ghosts],
             "score": [self._pacman_score, self._ghosts_score],
-            "beannumber": self._beannumber,
+            "beannumber": self._init_bean_count,
             "portal_available": self._portal_available,
             "portal_coord": self._portal_coord,
         }
@@ -138,10 +138,11 @@ class PacmanEnv(gym.Env):
         self._pacman.set_level(self._level)
         self._pacman.set_size(self._size)
         self._pacman.clear_skills()
+        self._pacman.reset_eaten_bean_count()
         for i in range(3):
             self._ghosts[i].set_coord(np.array(coords[i + 1]))
 
-        self._board, self._beannumber, self._portal_coord = final_boardgenerator(
+        self._board, self._init_bean_count, self._portal_coord = final_boardgenerator(
             self._size, self._level
         )
         self._pacman.set_portal_coord(self._portal_coord)
@@ -162,10 +163,11 @@ class PacmanEnv(gym.Env):
             self._ghosts[i].set_coord(np.array(reset_dict["ghosts_coord"][i]))
         self._pacman.set_coord(np.array(reset_dict["pacman_coord"]))
         self._pacman.clear_skills()
+        self._pacman.reset_eaten_bean_count()
         self._ghosts_score = reset_dict["score"][1]
         self._pacman_score = reset_dict["score"][0]
         self._board = np.array(reset_dict["board"])
-        self._beannumber = reset_dict["beannumber"]
+        self._init_bean_count = reset_dict["beannumber"]
         self._portal_coord = np.array(reset_dict["portal_coord"])
         self._portal_available = False
         return
@@ -273,13 +275,7 @@ class PacmanEnv(gym.Env):
         pacman_reward += self._pacman.eat_bean(self._board)
         self.update_all_score()
 
-        count_remain_beans = 0
-        for i in range(self._size):
-            for j in range(self._size):
-                if (self._board[i][j] == Space.REGULAR_BEAN.value) or (
-                    self._board[i][j] == Space.BONUS_BEAN.value
-                ):
-                    count_remain_beans += 1
+        count_remain_beans = self._init_bean_count - self._pacman.get_eaten_bean_count()
 
         ghost_num = 0
         for i in range(1, len(parsed_pacman_step_block)):
@@ -348,6 +344,7 @@ class PacmanEnv(gym.Env):
                 )
                 self.update_all_score()
                 self._pacman.clear_skills()
+                self._pacman.reset_eaten_bean_count()
                 self._event_list.append(Event.FINISH_LEVEL)
                 self._pacman_continuous_alive = 0
                 self._eaten_time = 0
@@ -372,6 +369,7 @@ class PacmanEnv(gym.Env):
             )
             self.update_all_score()
             self._pacman.clear_skills()
+            self._pacman.reset_eaten_bean_count()
             self._event_list.append(Event.FINISH_LEVEL)
             self._pacman_continuous_alive = 0
             self._eaten_time = 0
@@ -385,6 +383,7 @@ class PacmanEnv(gym.Env):
                 )
             self.update_all_score()
             self._pacman.clear_skills()
+            self._pacman.reset_eaten_bean_count()
             self._event_list.append(Event.TIMEOUT)
             self._pacman_continuous_alive = 0
             self._eaten_time = 0
@@ -458,7 +457,7 @@ class PacmanEnv(gym.Env):
             ghosts_pos=[ghost.get_coord() for ghost in self._ghosts],
             pacman_score=self._pacman_score,
             ghosts_score=self._ghosts_score,
-            beannumber=self._beannumber,
+            beannumber=self._init_bean_count,
             portal_available=self._portal_available,
             portal_coord=self._portal_coord,
         )
